@@ -157,7 +157,34 @@ var images = {
         
         return get(0, 0, 50, 50);
         
-    }
+    },
+    basicCast : function () {
+        
+        background(0, 0, 0, 0);
+        
+        pushMatrix();
+            translate(30, 3);
+            for (var i = 0; i < 20; i++) {
+                noStroke();
+                
+                var lerpC = lerpColor(color(255, 0, 0), color(255), i / 20);
+                
+                pushMatrix();
+                    scale((20 - i) / 20);
+                    
+                    fill(lerpC);
+                    beginShape();
+                        vertex(-30, 0);
+                        bezierVertex(-15, -2, 0, -5, 15, 0);
+                        bezierVertex(0, 5, -15, 2, -30, 0);
+                    endShape();
+                popMatrix();
+            }
+        popMatrix();
+        
+        return get(0, 0, 45, 6);
+        
+    },
 };
 
 //]
@@ -373,46 +400,52 @@ var charCreateCloak = new Button(360, 450, 60, 60, function () {
 
 //]
 
+/** Draw and mouseClicked functions **/
+// [
+
 draw = function () {
     try {
         
-    if (!loaded) {
-        load();
-    }
-    else {
-        switch (scene) {
-            case "char-creation" : {
-                
-                image(images.noiseSquare, 0, 0, width, height);
-                
-                player.draw();
-                
-                charCreateLeft.draw();
-                charCreateRight.draw();
-                charCreateSkin.draw();
-                charCreateEye.draw();
-                charCreateCloak.draw();
-                
-                if (charCreateMode === "skinTone") {
-                    selectedArrowX = lerp(selectedArrowX, 246, 0.1);
-                }
-                else if (charCreateMode === "eyeColor") {
-                    selectedArrowX = lerp(selectedArrowX, 337, 0.1);
-                }
-                else if (charCreateMode === "cloakColor") {
-                    selectedArrowX = lerp(selectedArrowX, 428, 0.1);
-                }
-                
-                pushMatrix();
-                    translate(selectedArrowX, 510);
-                    rotate(90);
-                    image(images.selectedArrow, 0, 0, 75, 75);
-                popMatrix();
-                
-            } break;
+        if (!loaded) {
+            load();
         }
-    }
-    clicked = false;
+        else {
+            switch (scene) {
+                case "char-creation" : {
+                    
+                    image(images.noiseSquare, 0, 0, width, height);
+                    
+                    player.draw();
+                    player.r += 0.3;
+                    
+                    charCreateLeft.draw();
+                    charCreateRight.draw();
+                    charCreateSkin.draw();
+                    charCreateEye.draw();
+                    charCreateCloak.draw();
+                    
+                    if (charCreateMode === "skinTone") {
+                        selectedArrowX = lerp(selectedArrowX, 246, 0.1);
+                    }
+                    else if (charCreateMode === "eyeColor") {
+                        selectedArrowX = lerp(selectedArrowX, 337, 0.1);
+                    }
+                    else if (charCreateMode === "cloakColor") {
+                        selectedArrowX = lerp(selectedArrowX, 428, 0.1);
+                    }
+                    
+                    pushMatrix();
+                        translate(selectedArrowX, 510);
+                        rotate(90);
+                        image(images.selectedArrow, 0, 0, 75, 75);
+                    popMatrix();
+                    
+                } break;
+            }
+        }
+        
+        clicked = false;
+    
     }
     catch (e) {
         println(e);
@@ -422,3 +455,5 @@ draw = function () {
 mouseClicked = function () {
     clicked = true;
 };
+
+//]
