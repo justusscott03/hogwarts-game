@@ -9,7 +9,7 @@ var charCreateMode = "skinTone";
 var eyeColorIndex = 2;
 var skinToneIndex = 2;
 var cloakColorIndex = 2;
-var selectedArrowX = 0;
+var selectedArrowX = 246;
 var eyeColors = [
     color(135, 206, 235),
     color(85, 170, 85),
@@ -41,8 +41,23 @@ var cloakColors = [
     color(200),
     color(255)
 ];
+var creationIndex = 1;
 
 //}
+
+//]
+
+/** Outlined text, credit to SP(@Prodigy6) **/
+// [
+
+var outlinedText = function (t, x, y, f, s, w) {
+    fill(s);
+    for(var i = 0; i < 30; i++) {
+        text(t, x + sin(i * 16) * w / 16, y + cos(i * 16) * w / 16);
+    }
+    fill(f);
+    text(t, x, y);
+};
 
 //]
 
@@ -57,6 +72,7 @@ keyReleased = function () {
     keys[keyCode] = false;
 };
 
+var typed = false;
 var clicked = false;
 
 //]
@@ -219,14 +235,14 @@ var images = {
         return get(0, 0, 100, 100);
         
     },
-    noiseSquare : function () {
+    input : function () {
         
         background(0, 0, 0, 0);
-        
+   
         var xOff = 0;
         for (var x = 0; x < 300; x++) {
             var yOff = 0;
-            for (var y = 0; y < 300; y++) {
+            for (var y = 0; y < 40; y++) {
                 var bright = map(noise(xOff, yOff), 0, 1, 0, 255);
                 stroke(bright);
                 point(x, y);
@@ -235,7 +251,47 @@ var images = {
             xOff += 0.02;
         }
         
-        return get(0, 0, 300, 300);
+        noStroke();
+        fill(0, 106, 255, 100);
+        rect(0, 0, 300, 40);
+        
+        fill(230, 215, 0);
+        quad(2, 2, 6, 6, 294, 6, 298, 2);
+        
+        fill(207, 193, 0);
+        quad(2, 38, 6, 34, 294, 34, 298, 38);
+        
+        fill(184, 172, 0);
+        quad(2, 2, 6, 6, 6, 34, 2, 38);
+        
+        fill(255, 244, 125);
+        quad(298, 2, 294, 6, 294, 34, 298, 38);
+        
+        strokeWeight(5);
+        stroke(255, 238, 0);
+        noFill();
+        rect(0, 0, 300, 40);
+        
+        return get(0, 0, 300, 40);
+        
+    },
+    noiseSquare : function () {
+        
+        background(0, 0, 0, 0);
+        
+        var xOff = 0;
+        for (var x = 0; x < 250; x++) {
+            var yOff = 0;
+            for (var y = 0; y < 250; y++) {
+                var bright = map(noise(xOff, yOff), 0, 1, 0, 255);
+                stroke(bright);
+                point(x, y);
+                yOff += 0.02;
+            }
+            xOff += 0.02;
+        }
+        
+        return get(0, 0, 250, 250);
         
     },
     leftArrow : function () {
@@ -541,6 +597,59 @@ var player = new Player(300, 300, 150, 150);
 
 //]
 
+/** Text inputs **/
+// [
+
+var Input = (function () {
+
+    var _Input = function (x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.txt = [];
+        this.blinkTimer = 0;
+    };
+    
+    _Input.prototype = {
+        
+        draw : function () {
+            this.blinkTimer++;
+            
+            image(images.input, this.x, this.y, this.w, this.h);
+            
+            textFont(createFont("monospace"));
+            textAlign(CORNER, CENTER);
+            textSize(20);
+            this.txt.length = constrain(this.txt.length, 0, 20);
+            for (var i = 0; i < this.txt.length; i++) {
+                outlinedText(this.txt[i], this.x + i * 12 + 8, this.y + this.h / 2, color(255), color(0), 20);
+            }
+            
+            if (this.blinkTimer % 80 < 40) {
+                outlinedText("|", this.x + this.txt.length * 12 + 8, this.y + this.h / 2, color(255), color(0), 20);
+            }
+            
+            if (typed) {
+                if (key.code !== 8) {
+                    this.txt.push(key);
+                }
+                else {
+                    this.txt.pop();
+                }
+            }
+        }
+        
+    };
+
+    return _Input;
+
+}) ();
+
+var input = new Input(200, 200, 300, 40);
+
+//]
+
 /** Button **/
 // [
 
@@ -583,7 +692,14 @@ var Button = (function () {
                 translate(-this.x - this.w / 2, -this.y - this.h / 2);
                 image(images.button, this.x, this.y, this.w, this.h);
                 
-                image(images[this.icon], this.x, this.y, this.w, this.h);
+                if (images[this.icon] !== undefined) {
+                    image(images[this.icon], this.x, this.y, this.w, this.h);
+                }
+                else {
+                    textAlign(CENTER, CENTER);
+                    textSize((this.w * this.h) / 500);
+                    outlinedText(this.icon, this.x + this.w / 2, this.y + this.h / 2, color(255), color(0), 40);
+                }
             popMatrix();
         }
         
@@ -592,6 +708,8 @@ var Button = (function () {
     return _Button;
     
 }) ();
+
+// Player creation {
 
 var charCreateLeft = new Button(50, 250, 100, 100, function () {
     if (charCreateMode === "eyeColor") {
@@ -654,6 +772,11 @@ var charCreateEye = new Button(270, 450, 60, 60, function () {
 var charCreateCloak = new Button(360, 450, 60, 60, function () {
     charCreateMode = "cloakColor";
 }, "miniPlayer");
+var charCreateNext = new Button(225, 25, 150, 150, function () {
+    creationIndex = 2;
+}, "NEXT");
+
+//}
 
 //]
 
@@ -662,51 +785,60 @@ var charCreateCloak = new Button(360, 450, 60, 60, function () {
 
 draw = function () {
     try {
-        
         if (!loaded) {
             load();
         }
         else {
             switch (scene) {
                 case "char-creation" : {
-                    
                     image(images.noiseSquare, 0, 0, width, height);
-                    
                     player.draw();
                     player.r += 0.3;
-                    
-                    charCreateLeft.draw();
-                    charCreateRight.draw();
-                    charCreateSkin.draw();
-                    charCreateEye.draw();
-                    charCreateCloak.draw();
-                    
-                    if (charCreateMode === "skinTone") {
-                        selectedArrowX = lerp(selectedArrowX, 246, 0.1);
+                    if (creationIndex === 1) {
+                        charCreateLeft.draw();
+                        charCreateRight.draw();
+                        charCreateSkin.draw();
+                        charCreateEye.draw();
+                        charCreateCloak.draw();
+                        charCreateNext.draw();
+                        
+                        if (charCreateMode === "skinTone") {
+                            selectedArrowX = lerp(selectedArrowX, 246, 0.1);
+                        }
+                        else if (charCreateMode === "eyeColor") {
+                            selectedArrowX = lerp(selectedArrowX, 337, 0.1);
+                        }
+                        else if (charCreateMode === "cloakColor") {
+                            selectedArrowX = lerp(selectedArrowX, 428, 0.1);
+                        }
+                        
+                        pushMatrix();
+                            translate(selectedArrowX, 510);
+                            rotate(90);
+                            image(images.selectedArrow, 0, 0, 75, 75);
+                        popMatrix();
                     }
-                    else if (charCreateMode === "eyeColor") {
-                        selectedArrowX = lerp(selectedArrowX, 337, 0.1);
+                    else {
+                        player.s = lerp(player.s, 2 / 3, 0.1);
+                        player.x = lerp(player.x, 75, 0.1);
+                        player.y = lerp(player.y, 75, 0.1);
+                        
+                        input.draw();
                     }
-                    else if (charCreateMode === "cloakColor") {
-                        selectedArrowX = lerp(selectedArrowX, 428, 0.1);
-                    }
-                    
-                    pushMatrix();
-                        translate(selectedArrowX, 510);
-                        rotate(90);
-                        image(images.selectedArrow, 0, 0, 75, 75);
-                    popMatrix();
-                    
                 } break;
             }
         }
         
+        typed = false;
         clicked = false;
-    
     }
     catch (e) {
         println(e);
     }
+};
+
+keyTyped = function () {
+    typed = true;
 };
 
 mouseClicked = function () {
