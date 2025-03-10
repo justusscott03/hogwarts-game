@@ -65,6 +65,160 @@ var clicked = false;
 // [
 
 var images = {
+    force : function () {
+        
+        background(0, 0, 0, 0);
+        
+        var msk = createGraphics(width, height, P2D);
+        
+        msk.background(0, 0, 0, 0);
+        
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        msk = msk.get();
+        
+        var bkg = createGraphics(width, height, P2D);
+        
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
+        
+        bkg = bkg.get();
+        
+        bkg.mask(msk);
+        
+        image(bkg, 0, 0);
+        
+        noFill();
+        strokeWeight(4);
+        stroke(176, 123, 0);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        strokeWeight(1);
+        stroke(255);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        return get(0, 0, 100, 100);
+        
+    },
+    power : function () {
+        
+        background(0, 0, 0, 0);
+        
+        var msk = createGraphics(width, height, P2D);
+        
+        msk.background(0, 0, 0, 0);
+        
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        msk = msk.get();
+        
+        var bkg = createGraphics(width, height, P2D);
+        
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
+        
+        bkg = bkg.get();
+        
+        bkg.mask(msk);
+        
+        image(bkg, 0, 0);
+        
+        noFill();
+        strokeWeight(4);
+        stroke(176, 123, 0);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        strokeWeight(1);
+        stroke(255);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        return get(0, 0, 100, 100);
+        
+    },
+    forbidden : function () {
+        
+        background(0, 0, 0, 0);
+        
+        var msk = createGraphics(width, height, P2D);
+        
+        msk.background(0, 0, 0, 0);
+        
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        msk = msk.get();
+        
+        var bkg = createGraphics(width, height, P2D);
+        
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
+        
+        bkg = bkg.get();
+        
+        bkg.mask(msk);
+        
+        image(bkg, 0, 0);
+        
+        noFill();
+        strokeWeight(4);
+        stroke(176, 123, 0);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        strokeWeight(1);
+        stroke(255);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        return get(0, 0, 100, 100);
+        
+    },
+    button : function () {
+        
+        background(0, 0, 0, 0);
+        
+        var xOff = 0;
+        for (var x = 0; x < 100; x++) {
+            var yOff = 0;
+            for (var y = 0; y < 100; y++) {
+                var bright = map(noise(xOff, yOff), 0, 1, 0, 255);
+                stroke(bright);
+                point(x, y);
+                yOff += 0.02;
+            }
+            xOff += 0.02;
+        }
+        
+        noStroke();
+        fill(0, 106, 255, 100);
+        rect(0, 0, 100, 100);
+        
+        fill(230, 215, 0);
+        quad(2, 2, 6, 6, 94, 6, 98, 2);
+        
+        fill(207, 193, 0);
+        quad(2, 98, 6, 94, 94, 94, 98, 98);
+        
+        fill(184, 172, 0);
+        quad(2, 2, 6, 6, 6, 94, 2, 98);
+        
+        fill(255, 244, 125);
+        quad(98, 2, 94, 6, 94, 94, 98, 98);
+        
+        strokeWeight(5);
+        stroke(255, 238, 0);
+        noFill();
+        rect(0, 0, 100, 100);
+        
+        return get(0, 0, 100, 100);
+        
+    },
     noiseSquare : function () {
         
         background(0, 0, 0, 0);
@@ -209,6 +363,117 @@ var load = function () {
 
 //]
 
+/** Spell diamonds for casting **/
+// [
+
+var Spell = (function () {
+
+    var _Spell = function (x, y, w, h, t, n) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.type = t;
+        this.name = n;
+        this.s = 1;
+        this.reload = 0;
+        this.maxReload = 0;
+        this.reloading = false;
+        this.grayOpac = 0;
+    };
+    
+    _Spell.prototype = {
+    
+        update : function () {
+            if (this.type === "force") {
+                this.maxReload = 200;
+            }
+            if (this.type === "power") {
+                this.maxReload = 400;
+            }
+            if (this.type === "forbidden") {
+                this.maxReload = 1000;
+            }
+            
+            if (clicked && dist(this.x + this.w / 2, this.y + this.h / 2, mouseX, mouseY) < this.w / 2 && !this.reloading) {
+                this.s = 0.9;
+                this.reloading = true;
+            }
+            this.s = lerp(this.s, 1, 0.1);
+            
+            if (this.reloading) {
+                this.grayOpac = lerp(this.grayOpac, 200, 0.05);
+                this.reload++;
+                if (this.reload > this.maxReload) {
+                    this.reloading = false;
+                    this.reload = 0;
+                }
+            }
+            else {
+                this.grayOpac = lerp(this.grayOpac, 0, 0.05);
+            }
+        },
+        
+        draw : function () {
+            pushMatrix();
+                translate(this.x + this.w / 2, this.y + this.h / 2);
+                scale(this.s);
+                translate(-(this.x + this.w / 2), -(this.y + this.h / 2));
+                image(images[this.type], this.x, this.y, this.w, this.h);
+                //image(images[this.name], this.x, this.y, this.w, this.h);
+                
+                noStroke();
+                fill(1, 1, 1, this.grayOpac);
+                quad(this.x + this.w / 2, this.y, this.x + this.w, this.y + this.h / 2, this.x + this.w / 2, this.y + this.h, this.x, this.y + this.h / 2);
+                
+                var reload = map(this.reload, 0, this.maxReload, -90, 270);
+                
+                strokeCap(SQUARE);
+                strokeWeight(5);
+                stroke(150, 150, 150, this.grayOpac);
+                noFill();
+                arc(this.x + this.w / 2, this.y + this.h / 2, this.w / 1.8, this.h / 1.8, -90, reload);
+            popMatrix();
+        }
+    
+    };
+
+}) ();
+
+//]
+
+/** Sheet of four spells **/
+// [
+
+var SpellSheet = (function () {
+
+    var _SpellSheet = function (spell1, spell2, spell3, spell4) {
+        this.spell1 = spell1;
+        this.spell2 = spell2;
+        this.spell3 = spell3;
+        this.spell4 = spell4;
+    };
+    
+    _SpellSheet.prototype = {
+        
+        draw : function () {
+            this.spell1.update();
+            this.spell2.update();
+            this.spell3.update();
+            this.spell4.update();
+            
+            this.spell1.draw();
+            this.spell2.draw();
+            this.spell3.draw();
+            this.spell4.draw();
+        }
+        
+    };
+
+}) ();
+
+//]
+
 /** Player **/
 // [
 
@@ -316,15 +581,7 @@ var Button = (function () {
                 translate(this.x + this.w / 2, this.y + this.h / 2);
                 scale(this.s);
                 translate(-this.x - this.w / 2, -this.y - this.h / 2);
-            
-                image(images.noiseSquare, this.x, this.y, this.w, this.h);
-                fill(48, 135, 227, 100);
-                rect(this.x, this.y, this.w, this.h);
-                
-                strokeWeight(2);
-                stroke(255, 213, 0);
-                noFill();
-                rect(this.x, this.y, this.w, this.h);
+                image(images.button, this.x, this.y, this.w, this.h);
                 
                 image(images[this.icon], this.x, this.y, this.w, this.h);
             popMatrix();
