@@ -1,7 +1,9 @@
 /** Lots of variables **/
 // [
 
-var scene = "char-creation";
+var scene = "charCreation";
+var selectedButton = null;
+var difficulty = "normal";
 
 // Player creation {
 
@@ -9,7 +11,6 @@ var charCreateMode = "skinTone";
 var eyeColorIndex = 2;
 var skinToneIndex = 2;
 var cloakColorIndex = 2;
-var selectedArrowX = 246;
 var eyeColors = [
     color(135, 206, 235),
     color(85, 170, 85),
@@ -320,19 +321,6 @@ var images = {
         return get(0, 0, 100, 100);
         
     },
-    selectedArrow : function () {
-        
-        background(0, 0, 0, 0);
-        
-        noStroke();
-        
-        fill(255, 0, 0);
-        rect(50, 40, 100 / 3, 20);
-        triangle(50, 25, 50, 75, 12.5, 50);
-        
-        return get(0, 0, 100, 100);
-        
-    },
     miniPlayer : function () {
         
         background(0, 0, 0, 0);
@@ -589,6 +577,12 @@ var Player = (function () {
                 arc(this.w / 5, this.h * 6 / 25, this.w * 14 / 75, this.h / 10, 180, 360);
             popMatrix();
             
+        },
+        
+        displayName : function (name) {
+            var array = name;
+            var string = array.join();
+            return string.replaceAll(",", "");
         }
         
     };
@@ -685,8 +679,8 @@ var Input = (function () {
 
 }) ();
 
-var firstName = new Input(10, 200, 275, 110 / 3);
-var lastName = new Input(315, 200, 275, 110 / 3);
+var firstName = new Input(10, 230, 275, 110 / 3);
+var lastName = new Input(315, 230, 275, 110 / 3);
 
 //]
 
@@ -695,14 +689,16 @@ var lastName = new Input(315, 200, 275, 110 / 3);
 
 var Button = (function () {
     
-    var _Button = function (x, y, w, h, func, icon) {
+    var _Button = function (x, y, w, h, func, icon, type) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
         this.func = func;
         this.icon = icon;
+        this.type = type;
         this.mouseOver = false;
+        this.fade = 0;
         
         this.s = 1;
     };
@@ -721,10 +717,20 @@ var Button = (function () {
                 this.s = lerp(this.s, 1.05, 0.1);
                 if (clicked) {
                     this.func();
+                    if (this.type === "fadeSelect") {
+                        selectedButton = this;
+                    }
                 }
             }
             else {
                 this.s = lerp(this.s, 1, 0.1);
+            }
+            
+            if (selectedButton === this) {
+                this.fade = lerp(this.fade, 100, 0.1);
+            }
+            else {
+                this.fade = lerp(this.fade, 0, 0.1);
             }
             
             pushMatrix();
@@ -741,6 +747,9 @@ var Button = (function () {
                     textSize((this.w * this.h) / 500);
                     outlinedText(this.icon, this.x + this.w / 2, this.y + this.h / 2, color(255), color(0), 40);
                 }
+                
+                fill(255, 255, 255, this.fade);
+                rect(this.x + this.w * 3 / 50, this.y + this.h * 3 / 50, this.w * 22 / 25, this.h * 22 / 25);
             popMatrix();
         }
         
@@ -804,18 +813,31 @@ var charCreateRight = new Button(450, 250, 100, 100, function () {
         }
     }
 }, "rightArrow");
+
 var charCreateSkin = new Button(180, 450, 60, 60, function () {
     charCreateMode = "skinTone";
-}, "miniPlayer");
+}, "miniPlayer", "fadeSelect");
 var charCreateEye = new Button(270, 450, 60, 60, function () {
     charCreateMode = "eyeColor";
-}, "miniEye");
+}, "miniEye", "fadeSelect");
 var charCreateCloak = new Button(360, 450, 60, 60, function () {
     charCreateMode = "cloakColor";
-}, "miniPlayer");
+}, "miniPlayer", "fadeSelect");
+
 var charCreateNext = new Button(225, 25, 150, 150, function () {
     creationIndex = 2;
 }, "NEXT");
+
+var charCreateWitch = new Button(175, 350, 100, 100, function () {
+    player.witchOrWizard = "witch";
+}, "Witch", "fadeSelect");
+var charCreateWizard = new Button(325, 350, 100, 100, function () {
+    player.witchOrWizard  = "wizard";
+}, "Wizard", "fadeSelect");
+
+var charCreateEasy = new Button(100, 375, 80, 80, function () {}, "Easy", "fadeSelect");
+var charCreateNormal = new Button(250, 375, 80, 80, function () {}, "Normal", "fadeSelect");
+var charCreateHard = new Button(400, 375, 80, 80, function () {}, "Hard", "fadeSelect");
 
 //}
 
@@ -832,7 +854,7 @@ draw = function () {
         }
         else {
             switch (scene) {
-                case "char-creation" : {
+                case "charCreation" : {
                     image(images.noiseSquare, 0, 0, width, height);
                     player.draw();
                     player.r += 0.3;
@@ -843,24 +865,8 @@ draw = function () {
                         charCreateEye.draw();
                         charCreateCloak.draw();
                         charCreateNext.draw();
-                        
-                        if (charCreateMode === "skinTone") {
-                            selectedArrowX = lerp(selectedArrowX, 246, 0.1);
-                        }
-                        else if (charCreateMode === "eyeColor") {
-                            selectedArrowX = lerp(selectedArrowX, 337, 0.1);
-                        }
-                        else if (charCreateMode === "cloakColor") {
-                            selectedArrowX = lerp(selectedArrowX, 428, 0.1);
-                        }
-                        
-                        pushMatrix();
-                            translate(selectedArrowX, 510);
-                            rotate(90);
-                            image(images.selectedArrow, 0, 0, 75, 75);
-                        popMatrix();
                     }
-                    else {
+                    else if (creationIndex === 2) {
                         player.s = lerp(player.s, 2 / 3, 0.1);
                         player.x = lerp(player.x, 75, 0.1);
                         player.y = lerp(player.y, 75, 0.1);
@@ -870,9 +876,13 @@ draw = function () {
                         firstName.draw();
                         lastName.draw();
                         
+                        charCreateWitch.draw();
+                        charCreateWizard.draw();
+                        
                         textAlign(BASELINE);
-                        outlinedText("First Name", 10, 195, color(255), color(0), 20);
-                        outlinedText("Last Name", 315, 195, color(255), color(0), 20);
+                        textSize(20);
+                        outlinedText("First Name", 10, 225, color(255), color(0), 20);
+                        outlinedText("Last Name", 315, 225, color(255), color(0), 20);
                     }
                 } break;
             }
