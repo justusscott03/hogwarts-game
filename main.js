@@ -548,6 +548,10 @@ var Player = (function () {
         this.eyeColor = eyeColors[eyeColorIndex];
         this.skinTone = skinTones[skinToneIndex];
         this.cloakColor = color(50);
+        this.name = {
+            first : "",
+            name : ""
+        };
     };
     
     _Player.prototype = {
@@ -609,28 +613,63 @@ var Input = (function () {
         this.h = h;
         this.txt = [];
         this.blinkTimer = 0;
+        this.selected = false;
+        this.mouseOver = false;
     };
     
     _Input.prototype = {
         
         draw : function () {
+            this.mouseOver = mouseX > this.x &&
+                             mouseX < this.x + this.w &&
+                             mouseY > this.y &&
+                             mouseY < this.y + this.h;
+             
+            if (this.mouseOver) {
+                cursor("pointer");
+            }
+            if (clicked) {
+                if (this.mouseOver) {
+                    this.selected = true;
+                }
+                else {
+                    this.selected = false;
+                }
+            }
+            
             this.blinkTimer++;
             
-            image(images.input, this.x, this.y, this.w, this.h);
+            pushMatrix();
+                
+                translate(this.x, this.y);
+                scale(this.w / 300, this.h / 40);
+                translate(-this.x, -this.y);
+                
+                if (this.selected) {
+                    for (var i = 0; i < 5; i++) {
+                        fill(255, 255, 255, 255 - i * 50);
+                        rect(this.x - i, this.y - i, this.w + i * 2, this.h + i * 2, 5);
+                    }
+                }
+                
+                image(images.input, this.x, this.y, this.w, this.h);
+                
+                textFont(createFont("monospace"));
+                textAlign(CORNER, CENTER);
+                textSize(20);
+                this.txt.length = constrain(this.txt.length, 0, 20);
+                for (var i = 0; i < this.txt.length; i++) {
+                    outlinedText(this.txt[i], this.x + i * 12 + 9, this.y + this.h / 2, color(255), color(0), 20);
+                }
+                
+                if (this.blinkTimer % 80 < 40 && this.selected) {
+                    outlinedText("|", this.x + this.txt.length * 12 + 9, this.y + this.h / 2, color(255), color(0), 20);
+                }
             
-            textFont(createFont("monospace"));
-            textAlign(CORNER, CENTER);
-            textSize(20);
-            this.txt.length = constrain(this.txt.length, 0, 20);
-            for (var i = 0; i < this.txt.length; i++) {
-                outlinedText(this.txt[i], this.x + i * 12 + 8, this.y + this.h / 2, color(255), color(0), 20);
-            }
+            popMatrix();
             
-            if (this.blinkTimer % 80 < 40) {
-                outlinedText("|", this.x + this.txt.length * 12 + 8, this.y + this.h / 2, color(255), color(0), 20);
-            }
-            
-            if (typed) {
+            if (typed && this.selected) {
+                this.blinkTimer = 0;
                 if (key.code !== 8) {
                     this.txt.push(key);
                 }
@@ -646,7 +685,8 @@ var Input = (function () {
 
 }) ();
 
-var input = new Input(200, 200, 300, 40);
+var firstName = new Input(10, 200, 275, 110 / 3);
+var lastName = new Input(315, 200, 275, 110 / 3);
 
 //]
 
@@ -677,6 +717,7 @@ var Button = (function () {
                              mouseY < this.y + this.h;
                              
             if (this.mouseOver) {
+                cursor("pointer");
                 this.s = lerp(this.s, 1.05, 0.1);
                 if (clicked) {
                     this.func();
@@ -785,6 +826,7 @@ var charCreateNext = new Button(225, 25, 150, 150, function () {
 
 draw = function () {
     try {
+        cursor("auto");
         if (!loaded) {
             load();
         }
@@ -822,8 +864,15 @@ draw = function () {
                         player.s = lerp(player.s, 2 / 3, 0.1);
                         player.x = lerp(player.x, 75, 0.1);
                         player.y = lerp(player.y, 75, 0.1);
+                        player.name.first = firstName.txt;
+                        player.name.last = lastName.txt;
                         
-                        input.draw();
+                        firstName.draw();
+                        lastName.draw();
+                        
+                        textAlign(BASELINE);
+                        outlinedText("First Name", 10, 195, color(255), color(0), 20);
+                        outlinedText("Last Name", 315, 195, color(255), color(0), 20);
                     }
                 } break;
             }
