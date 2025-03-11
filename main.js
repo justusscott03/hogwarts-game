@@ -383,6 +383,18 @@ var images = {
         return get(0, 0, 45, 6);
         
     },
+    wand1 : function () {
+        
+        background(0, 0, 0, 0);
+        
+        strokeCap(ROUND);
+        stroke(133, 96, 41);
+        strokeWeight(4);
+        line(2, 2, 2, 42);
+        
+        return get(0, 0, 4, 44);
+        
+    }
 };
 
 //]
