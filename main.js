@@ -2,7 +2,7 @@
 // [
 
 var scene = "charCreation";
-var selectedButton = null;
+var selectedButtons = [];
 var difficulty = "normal";
 
 // Player creation {
@@ -10,7 +10,7 @@ var difficulty = "normal";
 var charCreateMode = "skinTone";
 var eyeColorIndex = 2;
 var skinToneIndex = 2;
-var cloakColorIndex = 2;
+var cloakColorIndex = 1;
 var eyeColors = [
     color(135, 206, 235),
     color(85, 170, 85),
@@ -82,6 +82,38 @@ var clicked = false;
 // [
 
 var images = {
+    cursorRings : function () {
+        
+        background(0, 0, 0, 0);
+        
+        noFill();
+
+        for (var i = 0; i < 5; i++) {
+            strokeWeight(i);
+            stroke(255, 245, 110, 255 - i * 50);
+            ellipse(25, 25, 45, 45);
+            ellipse(25, 25, 10, 10);
+        }
+        
+        return get(0, 0, 50, 50);
+        
+    },
+    cursorArcs : function () {
+        
+        background(0, 0, 0, 0);
+        
+        noFill();
+
+        for (var i = 0; i < 5; i++) {
+            strokeWeight(i);
+            stroke(255, 245, 110, 255 - i * 50);
+            arc(25, 25, 30, 30, 215, 325);
+            arc(25, 25, 30, 30, 35, 145);
+        }
+        
+        return get(0, 0, 50, 50);
+        
+    },
     force : function () {
         
         background(0, 0, 0, 0);
@@ -390,11 +422,51 @@ var images = {
         strokeCap(ROUND);
         stroke(133, 96, 41);
         strokeWeight(4);
-        line(2, 2, 2, 42);
+        line(25, 7, 25, 43);
         
-        return get(0, 0, 4, 44);
+        return get(0, 0, 50, 50);
         
-    }
+    },
+    wand2 : function () {
+        
+        background(0, 0, 0, 0);
+        
+        noFill();
+        strokeCap(ROUND);
+        stroke(87, 55, 11);
+        strokeWeight(4);
+        beginShape();
+            vertex(25, 43);
+            vertex(25, 30);
+            vertex(28, 20);
+            vertex(25, 12);
+            vertex(25, 7);
+        endShape();
+        
+        return get(0, 0, 50, 50);
+        
+    },
+    wand3 : function () {
+        
+        background(0, 0, 0, 0);
+        
+        noFill();
+        strokeCap(ROUND);
+        stroke(217, 203, 185);
+        strokeWeight(4);
+        line(25, 7, 25, 43);
+        for (var i = 0; i < 12; i++) {
+            var lerpC = lerpColor(color(163, 136, 57), color(0), i / 12);
+            
+            stroke(lerpC);
+            strokeCap(SQUARE);
+            strokeWeight(1);
+            line(23, i + 30, 26, i + 30);
+        }
+        
+        return get(0, 0, 50, 50);
+        
+    },
 };
 
 //]
@@ -416,6 +488,47 @@ var load = function () {
     }
     
 };
+
+//]
+
+/** Fancy cursor **/
+// [
+
+var Cursor = (function () {
+
+    var _Cursor = function (x, y) {
+        this.x = x;
+        this.y = y;
+        this.arc = 0;
+        this.size = 50;
+    };
+    
+    _Cursor.prototype = {
+        
+        update : function () {
+            this.x = mouseX;
+            this.y = mouseY;
+        },
+        
+        draw : function () {
+            image(images.cursorRings, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+            
+            this.arc++;
+            pushMatrix();
+                translate(this.x, this.y);
+                rotate(this.arc);
+                image(images.cursorArcs, -this.size / 2, -this.size / 2, this.size, this.size);
+            popMatrix();
+        }
+        
+    };
+    
+    return _Cursor;
+
+}) ();
+
+// Intentional mispelling because of Oh Noes error
+var cursro = new Cursor();
 
 //]
 
@@ -545,9 +658,10 @@ var Player = (function () {
         this.s = 1;
         
         this.witchOrWizard = null;
+        this.wand = "none";
         this.eyeColor = eyeColors[eyeColorIndex];
         this.skinTone = skinTones[skinToneIndex];
-        this.cloakColor = color(50);
+        this.cloakColor = cloakColors[cloakColorIndex];
         this.name = {
             first : "",
             name : ""
@@ -560,6 +674,7 @@ var Player = (function () {
             
             this.eyeColor = eyeColors[eyeColorIndex];
             this.skinTone = skinTones[skinToneIndex];
+            this.cloakColor = cloakColors[cloakColorIndex];
             
             noStroke();
             
@@ -568,11 +683,17 @@ var Player = (function () {
                 rotate(this.r);
                 scale(this.s);
                 
+                // Body
                 fill(this.skinTone);
                 ellipse(0, 0, this.w, this.h);
+                ellipse(-this.w / 2.25, this.h / 2.25, this.w / 3.25, this.h / 3.25);
+                ellipse(this.w / 2.25, this.h / 2.25, this.w / 3.25, this.h / 3.25);
                 fill(255, 255, 255, 30);
                 ellipse(-this.w / 50, -this.h / 50, this.w / 1.15, this.h / 1.15);
+                ellipse(-this.w / 2.205, this.h / 2.295, this.w / 3.7375, this.h / 3.7375);
+                ellipse(this.w / 2.295, this.h / 2.295, this.w / 3.7375, this.h / 3.7375);
                 
+                // Eyes
                 fill(255);
                 ellipse(-this.w / 5, this.h / 5, this.w / 5, this.h * 4 / 15);
                 ellipse(this.w / 5, this.h / 5, this.w / 5, this.h * 4 / 15);
@@ -587,6 +708,40 @@ var Player = (function () {
                 
                 arc(this.w / 5, this.h * 7 / 30, this.w * 29 / 150, this.h / 5, 0, 180);
                 arc(this.w / 5, this.h * 6 / 25, this.w * 14 / 75, this.h / 10, 180, 360);
+                
+                // Cloak
+                fill(this.cloakColor);
+                beginShape();
+                    curveVertex(-this.w / 10.2, this.h / 2.1);
+                    curveVertex(-this.w / 1.9, this.h / 30);
+                    curveVertex(-this.w / 2.6, -this.h / 2.7);
+                    curveVertex(-this.w / 4.6, -this.h / 1.7);
+                    curveVertex(-this.w / 12.5, -this.h / 1.2);
+                    curveVertex(this.w / 4, -this.h / 1.97);
+                    curveVertex(this.w / 2, -this.h / 6.9);
+                    curveVertex(this.w / 2, this.h / 5.7);
+                    curveVertex(this.w / 3.4, this.h / 22.6);
+                    curveVertex(this.w / 18.5, this.h / 11.5);
+                    curveVertex(-this.w / 3.9, this.h / 25.8);
+                    curveVertex(-this.w / 2.4, this.h / 9.0);
+                    curveVertex(-this.w / 2.1, this.h / 5.0);
+                    curveVertex(-this.w / 2.5, this.h / 8.2);
+                endShape();
+                
+                fill(0, 0, 0, 30);
+                beginShape();
+                    curveVertex(-this.w / 4.6, -this.h / 1.7);
+                    curveVertex(-this.w / 12.5, -this.h / 1.2);
+                    curveVertex(this.w / 4, -this.h / 1.97);
+                    curveVertex(this.w / 2, -this.h / 6.9);
+                    curveVertex(this.w / 2, this.h / 5.7);
+                    curveVertex(this.w / 3.4, this.h / 22.6);
+                    curveVertex(this.w / 18.5, this.h / 13.7);
+                    curveVertex(-this.w / 132, -this.h / 9.2);
+                    curveVertex(-this.w / 14, -this.h / 2.4);
+                    curveVertex(-this.w / 28.5, -this.h / 1.5);
+                    curveVertex(-this.w / 6.7, this.h / 13.3);
+                endShape();
             popMatrix();
             
         },
@@ -691,8 +846,8 @@ var Input = (function () {
 
 }) ();
 
-var firstName = new Input(10, 230, 275, 110 / 3);
-var lastName = new Input(315, 230, 275, 110 / 3);
+var firstName = new Input(10, 205, 275, 110 / 3);
+var lastName = new Input(315, 205, 275, 110 / 3);
 
 //]
 
@@ -701,7 +856,7 @@ var lastName = new Input(315, 230, 275, 110 / 3);
 
 var Button = (function () {
     
-    var _Button = function (x, y, w, h, func, icon, type) {
+    var _Button = function (x, y, w, h, func, icon, type, type2) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -709,6 +864,7 @@ var Button = (function () {
         this.func = func;
         this.icon = icon;
         this.type = type;
+        this.type2 = type2;
         this.mouseOver = false;
         this.fade = 0;
         
@@ -730,7 +886,12 @@ var Button = (function () {
                 if (clicked) {
                     this.func();
                     if (this.type === "fadeSelect") {
-                        selectedButton = this;
+                        for (var i = 0; i < selectedButtons.length; i++) {
+                            if (selectedButtons[i].type2 === this.type2) {
+                                selectedButtons.splice(i, 1);
+                            }
+                        }
+                        selectedButtons.push(this);
                     }
                 }
             }
@@ -738,11 +899,13 @@ var Button = (function () {
                 this.s = lerp(this.s, 1, 0.1);
             }
             
-            if (selectedButton === this) {
-                this.fade = lerp(this.fade, 100, 0.1);
-            }
-            else {
-                this.fade = lerp(this.fade, 0, 0.1);
+            for (var i = 0; i < selectedButtons.length; i++) {
+                if (selectedButtons[i] === this) {
+                    this.fade = lerp(this.fade, 100, 0.1);
+                }
+                else {
+                    this.fade = lerp(this.fade, 0, 0.1);
+                }
             }
             
             pushMatrix();
@@ -826,30 +989,40 @@ var charCreateRight = new Button(450, 250, 100, 100, function () {
     }
 }, "rightArrow");
 
-var charCreateSkin = new Button(180, 450, 60, 60, function () {
+var charCreateSkin = new Button(180, 75, 60, 60, function () {
     charCreateMode = "skinTone";
-}, "miniPlayer", "fadeSelect");
-var charCreateEye = new Button(270, 450, 60, 60, function () {
+}, "miniPlayer", "fadeSelect", "appearance");
+var charCreateEye = new Button(270, 75, 60, 60, function () {
     charCreateMode = "eyeColor";
-}, "miniEye", "fadeSelect");
-var charCreateCloak = new Button(360, 450, 60, 60, function () {
+}, "miniEye", "fadeSelect", "appearance");
+var charCreateCloak = new Button(360, 75, 60, 60, function () {
     charCreateMode = "cloakColor";
-}, "miniPlayer", "fadeSelect");
+}, "miniPlayer", "fadeSelect", "appearance");
 
-var charCreateNext = new Button(225, 25, 150, 150, function () {
-    creationIndex = 2;
+var charCreateNext = new Button(238.5, 450, 125, 125, function () {
+    creationIndex++;
 }, "NEXT");
 
-var charCreateWitch = new Button(175, 350, 100, 100, function () {
+var charCreateWitch = new Button(175, 315, 100, 100, function () {
     player.witchOrWizard = "witch";
-}, "Witch", "fadeSelect");
-var charCreateWizard = new Button(325, 350, 100, 100, function () {
+}, "Witch", "fadeSelect", "witchOrWizard");
+var charCreateWizard = new Button(325, 315, 100, 100, function () {
     player.witchOrWizard  = "wizard";
-}, "Wizard", "fadeSelect");
+}, "Wizard", "fadeSelect", "witchOrWizard");
 
-var charCreateEasy = new Button(100, 375, 80, 80, function () {}, "Easy", "fadeSelect");
-var charCreateNormal = new Button(250, 375, 80, 80, function () {}, "Normal", "fadeSelect");
-var charCreateHard = new Button(400, 375, 80, 80, function () {}, "Hard", "fadeSelect");
+var charCreateWand1 = new Button(195, 25, 100, 100, function () {
+    player.wand = 1;
+}, "wand1", "fadeSelect", "wand");
+var charCreateWand2 = new Button(320, 25, 100, 100, function () {
+    player.wand = 2;
+}, "wand2", "fadeSelect", "wand");
+var charCreateWand3 = new Button(445, 25, 100, 100, function () {
+    player.wand = 3;
+}, "wand3", "fadeSelect", "wand");
+
+var charCreateEasy = new Button(100, 375, 80, 80, function () {}, "Easy", "fadeSelect", "difficulty");
+var charCreateNormal = new Button(250, 375, 80, 80, function () {}, "Normal", "fadeSelect", "difficulty");
+var charCreateHard = new Button(400, 375, 80, 80, function () {}, "Hard", "fadeSelect", "difficulty");
 
 //}
 
@@ -888,14 +1061,24 @@ draw = function () {
                         firstName.draw();
                         lastName.draw();
                         
+                        charCreateWand1.draw();
+                        charCreateWand2.draw();
+                        charCreateWand3.draw();
                         charCreateWitch.draw();
                         charCreateWizard.draw();
+                        charCreateNext.draw();
                         
                         textAlign(BASELINE);
                         textSize(20);
-                        outlinedText("First Name", 10, 225, color(255), color(0), 20);
-                        outlinedText("Last Name", 315, 225, color(255), color(0), 20);
+                        outlinedText("First Name", 10, 200, color(255), color(0), 20);
+                        outlinedText("Last Name", 315, 200, color(255), color(0), 20);
                     }
+                    else {
+                        
+                    }
+                    cursro.update();
+                    cursro.draw();
+                    cursor("none");
                 } break;
             }
         }
