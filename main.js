@@ -43,6 +43,10 @@ var cloakColors = [
     color(255)
 ];
 var creationIndex = 1;
+var notReady = {
+    active : false,
+    opac : 0
+};
 
 //}
 
@@ -658,13 +662,13 @@ var Player = (function () {
         this.s = 1;
         
         this.witchOrWizard = null;
-        this.wand = "none";
+        this.wand = 0;
         this.eyeColor = eyeColors[eyeColorIndex];
         this.skinTone = skinTones[skinToneIndex];
         this.cloakColor = cloakColors[cloakColorIndex];
         this.name = {
             first : "",
-            name : ""
+            last : ""
         };
     };
     
@@ -866,7 +870,7 @@ var Button = (function () {
         this.type = type;
         this.type2 = type2;
         this.mouseOver = false;
-        this.fade = 0;
+        this.fade = (this.type.includes("default") ? 100 : 0);
         
         this.s = 1;
     };
@@ -885,7 +889,7 @@ var Button = (function () {
                 this.s = lerp(this.s, 1.05, 0.1);
                 if (clicked) {
                     this.func();
-                    if (this.type === "fadeSelect") {
+                    if (this.type.includes("fadeSelect")) {
                         for (var i = 0; i < selectedButtons.length; i++) {
                             if (selectedButtons[i].type2 === this.type2) {
                                 selectedButtons.splice(i, 1);
@@ -961,7 +965,7 @@ var charCreateLeft = new Button(50, 250, 100, 100, function () {
             cloakColorIndex--;
         }
     }
-}, "leftArrow");
+}, "leftArrow", "");
 var charCreateRight = new Button(450, 250, 100, 100, function () {
     if (charCreateMode === "eyeColor") {
         if (eyeColorIndex === eyeColors.length - 1) {
@@ -987,11 +991,11 @@ var charCreateRight = new Button(450, 250, 100, 100, function () {
             cloakColorIndex++;
         }
     }
-}, "rightArrow");
+}, "rightArrow", "");
 
 var charCreateSkin = new Button(180, 75, 60, 60, function () {
     charCreateMode = "skinTone";
-}, "miniPlayer", "fadeSelect", "appearance");
+}, "miniPlayer", "fadeSelect default", "appearance");
 var charCreateEye = new Button(270, 75, 60, 60, function () {
     charCreateMode = "eyeColor";
 }, "miniEye", "fadeSelect", "appearance");
@@ -1000,8 +1004,19 @@ var charCreateCloak = new Button(360, 75, 60, 60, function () {
 }, "miniPlayer", "fadeSelect", "appearance");
 
 var charCreateNext = new Button(238.5, 450, 125, 125, function () {
-    creationIndex++;
-}, "NEXT");
+    selectedButtons.length = 0;
+    if (creationIndex === 1) {
+        creationIndex++;
+    }
+    else if (creationIndex === 2) {
+        if (player.wand !== 0 && player.name.first.length !== 0 && player.name.last.length !== 0 && player.witchOrWizard !== null) {
+            creationIndex++;
+        }
+        else {
+            notReady.active = true;
+        }
+    }
+}, "NEXT", "");
 
 var charCreateWitch = new Button(175, 315, 100, 100, function () {
     player.witchOrWizard = "witch";
@@ -1020,9 +1035,17 @@ var charCreateWand3 = new Button(445, 25, 100, 100, function () {
     player.wand = 3;
 }, "wand3", "fadeSelect", "wand");
 
-var charCreateEasy = new Button(100, 375, 80, 80, function () {}, "Easy", "fadeSelect", "difficulty");
-var charCreateNormal = new Button(250, 375, 80, 80, function () {}, "Normal", "fadeSelect", "difficulty");
-var charCreateHard = new Button(400, 375, 80, 80, function () {}, "Hard", "fadeSelect", "difficulty");
+var charCreateEasy = new Button(100, 150, 100, 100, function () {
+    difficulty = "easy";
+}, "Easy", "fadeSelect", "difficulty");
+var charCreateNormal = new Button(250, 150, 100, 100, function () {
+    difficulty = "normal";
+}, "Normal", "fadeSelect default", "difficulty");
+var charCreateHard = new Button(400, 150, 100, 100, function () {
+    difficulty = "hard";
+}, "Hard", "fadeSelect", "difficulty");
+
+var PLAY = new Button(225, 325, 150, 150, function () {}, "Play", "");
 
 //}
 
@@ -1072,9 +1095,26 @@ draw = function () {
                         textSize(20);
                         outlinedText("First Name", 10, 200, color(255), color(0), 20);
                         outlinedText("Last Name", 315, 200, color(255), color(0), 20);
+                        
+                        if (notReady.active) {
+                            notReady.opac++;
+                            if (notReady.opac > 255) {
+                                notReady.active = false;
+                            }
+                        }
+                        else {
+                            notReady.opac--;
+                        }
+                        notReady.opac = constrain(notReady.opac, 0, 255);
+                        
+                        textAlign(CENTER, CENTER);
+                        outlinedText("Please finish filling out the required information", 300, 275, color(255, 255, 255, notReady.opac), color(255, 0, 0, notReady.opac), 20);
                     }
                     else {
-                        
+                        charCreateEasy.draw();
+                        charCreateNormal.draw();
+                        charCreateHard.draw();
+                        PLAY.draw();
                     }
                     cursro.update();
                     cursro.draw();
