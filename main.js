@@ -1,3 +1,9 @@
+/**
+
+Credit to SP(@Prodigy6) for the outlined text and camera from his project, The Temple of Itzomar: https://www.khanacademy.org/computer-programming/the-temple-of-itzomar/6253229457391616
+
+**/
+
 /** Lots of variables **/
 // [
 
@@ -49,6 +55,11 @@ var notReady = {
 };
 
 //}
+
+var cam = {
+    x : 0,
+    y : 0
+};
 
 //]
 
@@ -392,6 +403,26 @@ var images = {
         return get(0, 0, 50, 50);
         
     },
+    miniCloak : function () {
+        
+        background(0, 0, 0, 0);
+        
+        noStroke(); 
+        
+        fill(50);
+        arc(32, 43, 20, 50, -90, 1);
+        arc(25, 20, 20, 30, 180, 360);
+        
+        fill(25);
+        rect(18, 18, 14, 25);
+        
+        fill(0);
+        arc(18, 43, 20, 50, 180, 270);
+        arc(25, 20, 15, 25, 180, 360);
+        
+        return get(0, 0, 50, 50);
+        
+    },
     basicCast : function () {
         
         background(0, 0, 0, 0);
@@ -536,6 +567,58 @@ var cursro = new Cursor();
 
 //]
 
+/** Scene transition **/
+// [
+
+var SceneChange = (function () {
+
+    var _SceneChange = function () {
+        this.nextScene = "menu";
+        this.mode = "out";
+        this.opac = 255;
+        this.changeSpeed = 10;
+    };
+    
+    _SceneChange.prototype = {
+        
+        draw : function () {
+            noStroke();
+            fill(0, 0, 0, this.opac);
+            rect(0, 0, 600, 600);
+        },
+        
+        reset : function (nextScene) {
+            if (this.mode === "out") {
+                this.opac = 0;
+                this.mode = "in";
+                this.nextScene = nextScene;
+            }
+        },
+        
+        pack : function () {
+            if (this.mode === "in") {
+                this.opac += this.changeSpeed;
+                if (this.opac >= 255) {
+                    this.mode = "out";
+                    scene = this.nextScene;
+                }
+            }
+            else {
+                this.opac -= this.changeSpeed;
+            }
+            this.draw();
+        }
+        
+    };
+    
+    return _SceneChange;
+
+}) ();
+
+var sceneChange = new SceneChange();
+
+//]
+
 /** Spell diamonds for casting **/
 // [
 
@@ -647,6 +730,45 @@ var SpellSheet = (function () {
 
 //]
 
+/** Collision box **/
+// [
+
+// Yes I know this is repetitive and confusing
+var CollisionBox = (function () {
+
+    var _CollisionBox = function (x, y, w, h, type) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.type = type;
+    };
+
+    _CollisionBox.prototype = {
+        
+        run : function () {
+            fill(0);
+            if (this.type === "rect") {
+                rect(this.x, this.y, this.w, this.h);
+            }
+            else if (this.type === "circ") {
+                ellipse(this.x, this.y, this.w, this.h);
+            }
+        }
+        
+    };
+    
+    return _CollisionBox;
+
+}) ();
+
+var collisionBoxes = [];
+collisionBoxes.add = function (x, y, w, h, type) {
+    this.push(new CollisionBox(x, y, w, h, type));
+};
+
+//]
+
 /** Player **/
 // [
 
@@ -657,6 +779,10 @@ var Player = (function () {
         this.y = y;
         this.w = w;
         this.h = h;
+        
+        this.velx = 0;
+        this.vely = 0;
+        this.maxSpeed = 3;
         
         this.r = 0;
         this.s = 1;
@@ -670,9 +796,60 @@ var Player = (function () {
             first : "",
             last : ""
         };
+        
+        this.dead = false;
+        this.health = 100;
     };
     
     _Player.prototype = {
+        
+        checkCol : function (obj, type) {
+            if (type === "rect") {
+                // Incomplete
+                return this.x + this.w / 2 < obj.x;
+            }
+        },
+        
+        update : function () {
+            if (!this.dead) {
+                if (keys[65] || keys[37]) {
+                    this.velx--;
+                }
+                if (keys[68] || keys[39]) {
+                    this.velx++;
+                }
+                if (keys[87] || keys[38]) {
+                    this.vely--;
+                }
+                if (keys[83] || keys[40]) {
+                    this.vely++;
+                }
+                
+                if (!keys[65] && !keys[37] && !keys[68] && !keys[39]) {
+                    if (this.velx > 0) {
+                        this.velx--;
+                    }
+                    if (this.velx < 0) {
+                        this.velx++;
+                    }
+                }
+                
+                if (!keys[83] && !keys[40] && !keys[87] && !keys[38]) {
+                    if (this.vely > 0) {
+                        this.vely--;
+                    }
+                    if (this.vely < 0) {
+                        this.vely++;
+                    }
+                }
+                
+                this.velx = constrain(this.velx, -this.maxSpeed, this.maxSpeed);
+                this.vely = constrain(this.vely, -this.maxSpeed, this.maxSpeed);
+                
+                this.x += this.velx;
+                this.y += this.vely;
+            }
+        },
         
         draw : function () {
             
@@ -686,6 +863,14 @@ var Player = (function () {
                 translate(this.x, this.y);
                 rotate(this.r);
                 scale(this.s);
+                
+                // Wand
+                pushMatrix();
+                    rotate(180);
+                    if (images["wand" + this.wand] !== undefined) {
+                        image(images["wand" + this.wand], this.w / 8, -this.h / 0.9, this.w / 1.5, this.h / 1.5);
+                    }
+                popMatrix();
                 
                 // Body
                 fill(this.skinTone);
@@ -762,7 +947,16 @@ var Player = (function () {
     
 }) ();
 
-var player = new Player(300, 300, 150, 150);
+var player = new Player(300, 300, 75, 75);
+
+//]
+
+/** Map loading **/
+// [
+
+var loadMap = function () {
+    
+};
 
 //]
 
@@ -1001,7 +1195,7 @@ var charCreateEye = new Button(270, 75, 60, 60, function () {
 }, "miniEye", "fadeSelect", "appearance");
 var charCreateCloak = new Button(360, 75, 60, 60, function () {
     charCreateMode = "cloakColor";
-}, "miniPlayer", "fadeSelect", "appearance");
+}, "miniCloak", "fadeSelect", "appearance");
 
 var charCreateNext = new Button(238.5, 450, 125, 125, function () {
     selectedButtons.length = 0;
@@ -1045,7 +1239,9 @@ var charCreateHard = new Button(400, 150, 100, 100, function () {
     difficulty = "hard";
 }, "Hard", "fadeSelect", "difficulty");
 
-var PLAY = new Button(225, 325, 150, 150, function () {}, "Play", "");
+var PLAY = new Button(225, 325, 150, 150, function () {
+    sceneChange.reset("game");
+}, "Play", "");
 
 //}
 
@@ -1064,9 +1260,12 @@ draw = function () {
             switch (scene) {
                 case "charCreation" : {
                     image(images.noiseSquare, 0, 0, width, height);
-                    player.draw();
                     player.r += 0.3;
+                    player.draw();
+                    
                     if (creationIndex === 1) {
+                        player.s = 2;
+                        
                         charCreateLeft.draw();
                         charCreateRight.draw();
                         charCreateSkin.draw();
@@ -1075,7 +1274,7 @@ draw = function () {
                         charCreateNext.draw();
                     }
                     else if (creationIndex === 2) {
-                        player.s = lerp(player.s, 2 / 3, 0.1);
+                        player.s = lerp(player.s, 1, 0.1);
                         player.x = lerp(player.x, 75, 0.1);
                         player.y = lerp(player.y, 75, 0.1);
                         player.name.first = firstName.txt;
@@ -1120,9 +1319,23 @@ draw = function () {
                     cursro.draw();
                     cursor("none");
                 } break;
+                case "game" : {
+                    background(155);
+                    
+                    cam.x = 300 - player.x;
+                    cam.y = 300 - player.y;
+                    
+                    pushMatrix();
+                        translate(cam.x, cam.y);
+                        player.r = degrees(Math.atan2(mouseY - player.y, mouseX - player.x)) - 90;
+                        player.update();
+                        player.draw();
+                    popMatrix();
+                } break;
             }
         }
         
+        sceneChange.pack();
         typed = false;
         clicked = false;
     }
