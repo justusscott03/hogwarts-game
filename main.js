@@ -1,6 +1,8 @@
 /**
 
-Credit to SP(@Prodigy6) for the outlined text and camera from his project, The Temple of Itzomar: https://www.khanacademy.org/computer-programming/the-temple-of-itzomar/6253229457391616
+Credit to SP(@Prodigy6) for the outlined text and camera from their project, The Temple of Itzomar: https://www.khanacademy.org/computer-programming/the-temple-of-itzomar/6253229457391616
+
+Credit to Vicioustrex(@Vicioustrex) for the circle-to-circle and circle-to-rect collisions and spell casting from their project, Airsoft Battle: https://www.khanacademy.org/computer-programming/airsoft-battle/6722101637464064
 
 **/
 
@@ -619,6 +621,60 @@ var sceneChange = new SceneChange();
 
 //]
 
+/** Spell cast **/
+// [
+
+var SpellCast = (function () {
+    
+    var _SpellCast = function (x, y, w, h, r, type) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.r = r;
+        this.type = type;
+        
+        this.velx = 0;
+        this.vely = 0;
+        this.maxSpeed = 10;
+        
+        this.flyTime = 0;
+        this.visible = true;
+        
+        this.reloading = false;
+        this.reloadTime = 0;
+    };
+    
+    _SpellCast.prototype = {
+        
+        draw : function () {
+            image(images[this.type], this.x, this.y, this.w, this.h);
+        },
+        
+        update : function () {
+            this.flyTime++;
+            
+            if (this.flyTime > 300) {
+                this.visible = false;
+            }
+            
+            this.velx = Math.sin((this.r * 180 / Math.PI) + 1.55) * this.maxSpeed;
+            this.vely = -Math.cos((this.r * 180 / Math.PI) + 1.55) * this.maxSpeed;
+            
+            this.x += this.velx;
+            this.y += this.vely;
+        }
+        
+    };
+    
+    return _SpellCast;
+    
+}) ();
+
+var spellCasts = [];
+
+//]
+
 /** Spell diamonds for casting **/
 // [
 
@@ -730,45 +786,6 @@ var SpellSheet = (function () {
 
 //]
 
-/** Collision box **/
-// [
-
-// Yes I know this is repetitive and confusing
-var CollisionBox = (function () {
-
-    var _CollisionBox = function (x, y, w, h, type) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.type = type;
-    };
-
-    _CollisionBox.prototype = {
-        
-        run : function () {
-            fill(0);
-            if (this.type === "rect") {
-                rect(this.x, this.y, this.w, this.h);
-            }
-            else if (this.type === "circ") {
-                ellipse(this.x, this.y, this.w, this.h);
-            }
-        }
-        
-    };
-    
-    return _CollisionBox;
-
-}) ();
-
-var collisionBoxes = [];
-collisionBoxes.add = function (x, y, w, h, type) {
-    this.push(new CollisionBox(x, y, w, h, type));
-};
-
-//]
-
 /** Player **/
 // [
 
@@ -799,14 +816,28 @@ var Player = (function () {
         
         this.dead = false;
         this.health = 100;
+        this.selectedSpell = "basicCast";
     };
     
     _Player.prototype = {
         
-        checkCol : function (obj, type) {
-            if (type === "rect") {
-                // Incomplete
-                return this.x + this.w / 2 < obj.x;
+        rectCol : function (rx, ry, rw, rh, cx, cy, cr) {
+            var clx = Math.max(rx, Math.min(cx, rx + rw));
+            var cly = Math.max(ry, Math.min(cy, ry + rh));
+            
+            var dx = cx - clx;
+            var dy = cy - cly;
+            var ds = dx * dx + dy * dy;
+            
+            return ds < cr * cr;
+        },
+        
+        circCol : function (cx, cy, cd, cx2, cy2, cd2) {
+            if (dist(cx, cy, cx2, cy2) < cd / 2 + cd2 / 2) {
+                return true;
+            } 
+            else {
+                return false;
             }
         },
         
@@ -848,6 +879,10 @@ var Player = (function () {
                 
                 this.x += this.velx;
                 this.y += this.vely;
+                
+                spellCasts.push(new SpellCast(this.x + Math.sin((this.r * 180 / Math.PI) + 1.55) * 20, this.y + -Math.cos((this.r * 180 / Math.PI) + 1.55), 45, 6, this.r, "basicCast"));
+                
+                println(Math.sin((this.r * 180 / Math.PI) + 1.55) * 20);
             }
         },
         
@@ -951,12 +986,80 @@ var player = new Player(300, 300, 75, 75);
 
 //]
 
+/** Collision box **/
+// [
+
+// Yes I know this is repetitive and confusing
+var CollisionBox = (function () {
+
+    var _CollisionBox = function (x, y, w, h, type) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+        this.type = type;
+    };
+
+    _CollisionBox.prototype = {
+        
+        run : function () {
+            fill(0);
+            if (this.type === "rect") {
+                rect(this.x, this.y, this.w, this.h);
+            }
+            else if (this.type === "circ") {
+                ellipse(this.x, this.y, this.w, this.h);
+            }
+            
+            if (dist(player.x, player.y, this.x, this.y) < 1000) {
+                if (this.type === "circ") {
+                    if (player.circCol(this.x, this.y, this.w, player.x, player.y, player.w)) {
+                        var angle = Math.atan2(this.x - player.x, this.y - player.y);
+                        
+                        this.x = player.x - Math.cos(angle + 1.55) * (player.w / 2 + this.w / 2);
+                        this.y = player.y + Math.sin(angle + 1.55) * (player.w / 2 + this.w / 2);
+                    }
+                }
+                
+                if (this.type === "rect") {
+                    if (player.rectCol(this.x, this.y, this.w, this.h, player.x, player.y, player.w / 2)) {
+                        if (player.x < this.x) {
+                            player.x -= player.maxSpeed;
+                        }
+                        if (player.y < this.y) {
+                            player.y -= player.maxSpeed;
+                        }
+                        if (player.x > this.x + this.w) {
+                            player.x += player.maxSpeed;
+                        }
+                        if (player.y > this.y + this.h) {
+                            player.y += player.maxSpeed;
+                        }
+                    }
+                }
+            }
+        },
+        
+    };
+    
+    return _CollisionBox;
+
+}) ();
+
+var collisionBoxes = [];
+collisionBoxes.add = function (x, y, w, h, type) {
+    this.push(new CollisionBox(x, y, w, h, type));
+};
+
+//]
+
 /** Map loading **/
 // [
 
 var loadMap = function () {
-    
+    collisionBoxes.add(500, 500, 200, 200, "rect");
 };
+loadMap();
 
 //]
 
@@ -1325,11 +1428,25 @@ draw = function () {
                     cam.x = 300 - player.x;
                     cam.y = 300 - player.y;
                     
+                    player.r = (Math.atan2(mouseY - 300, mouseX - 300) * (180 / Math.PI)) - 90;
+                    
                     pushMatrix();
                         translate(cam.x, cam.y);
-                        player.r = degrees(Math.atan2(mouseY - player.y, mouseX - player.x)) - 90;
                         player.update();
                         player.draw();
+                        
+                        for (var i = 0; i < collisionBoxes.length; i++) {
+                            collisionBoxes[i].run();
+                        }
+                        
+                        for (var i = 0; i < spellCasts.length; i++) {
+                            spellCasts[i].update();
+                            spellCasts[i].draw();
+                            if (!spellCasts[i].visible) {
+                                spellCasts.splice(i, 1);
+                                i--;
+                            }
+                        }
                     popMatrix();
                 } break;
             }
