@@ -18,7 +18,7 @@ var difficulty = "normal";
 var charCreateMode = "skinTone";
 var eyeColorIndex = 2;
 var skinToneIndex = 2;
-var cloakColorIndex = 1;
+var cloakColorIndex = 11;
 var eyeColors = [
     color(135, 206, 235),
     color(85, 170, 85),
@@ -430,7 +430,7 @@ var images = {
         background(0, 0, 0, 0);
         
         pushMatrix();
-            translate(30, 3);
+            translate(3, 30);
             for (var i = 0; i < 20; i++) {
                 noStroke();
                 
@@ -441,15 +441,15 @@ var images = {
                     
                     fill(lerpC);
                     beginShape();
-                        vertex(-30, 0);
-                        bezierVertex(-15, -2, 0, -5, 15, 0);
-                        bezierVertex(0, 5, -15, 2, -30, 0);
+                        vertex(0, -30);
+                        bezierVertex(-2, -15, -5, 0, 0, 15);
+                        bezierVertex(5, 0, 2, -15, 0, -30);
                     endShape();
                 popMatrix();
             }
         popMatrix();
         
-        return get(0, 0, 45, 6);
+        return get(0, 0, 6, 45);
         
     },
     wand1 : function () {
@@ -626,7 +626,7 @@ var sceneChange = new SceneChange();
 
 var SpellCast = (function () {
     
-    var _SpellCast = function (x, y, w, h, r, type) {
+    var _SpellCast = function (x, y, w, h, r, type, maxSpeed) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -636,7 +636,7 @@ var SpellCast = (function () {
         
         this.velx = 0;
         this.vely = 0;
-        this.maxSpeed = 10;
+        this.maxSpeed = maxSpeed;
         
         this.flyTime = 0;
         this.visible = true;
@@ -648,7 +648,12 @@ var SpellCast = (function () {
     _SpellCast.prototype = {
         
         draw : function () {
-            image(images[this.type], this.x, this.y, this.w, this.h);
+            pushMatrix();
+                translate(this.x, this.y);
+                rotate(this.r);
+                translate(-this.x, -this.y);
+                image(images[this.type], this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
+            popMatrix();
         },
         
         update : function () {
@@ -658,8 +663,8 @@ var SpellCast = (function () {
                 this.visible = false;
             }
             
-            this.velx = Math.sin((this.r * 180 / Math.PI) + 1.55) * this.maxSpeed;
-            this.vely = -Math.cos((this.r * 180 / Math.PI) + 1.55) * this.maxSpeed;
+            this.velx = sin(this.r + 180) * this.maxSpeed;
+            this.vely = -cos(this.r + 180) * this.maxSpeed;
             
             this.x += this.velx;
             this.y += this.vely;
@@ -672,6 +677,22 @@ var SpellCast = (function () {
 }) ();
 
 var spellCasts = [];
+
+//]
+
+/** Spell objects **/
+// [
+
+var spells = [
+    {
+        name : "basicCast",
+        damage : 5,
+        knockback : 0,
+        stun : false,
+        reload : 10,
+        speed : 10
+    },
+];
 
 //]
 
@@ -816,7 +837,9 @@ var Player = (function () {
         
         this.dead = false;
         this.health = 100;
-        this.selectedSpell = "basicCast";
+        this.castReload = 0;
+        this.reloading = false;
+        this.selectedSpell = spells[0];
     };
     
     _Player.prototype = {
@@ -880,9 +903,18 @@ var Player = (function () {
                 this.x += this.velx;
                 this.y += this.vely;
                 
-                spellCasts.push(new SpellCast(this.x + Math.sin((this.r * 180 / Math.PI) + 1.55) * 20, this.y + -Math.cos((this.r * 180 / Math.PI) + 1.55), 45, 6, this.r, "basicCast"));
+                if (this.reloading) {
+                    this.castReload++;
+                    if (this.castReload > this.selectedSpell.reload) {
+                        this.castReload = 0;
+                        this.reloading = false;
+                    }
+                }
                 
-                println(Math.sin((this.r * 180 / Math.PI) + 1.55) * 20);
+                if (clicked && !this.reloading) {
+                    spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
+                    this.reloading = true;
+                }
             }
         },
         
