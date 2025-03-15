@@ -1,0 +1,4 @@
+Attack speed: high,
+Damage: medium,
+Range: medium,
+Movement speed: medium
