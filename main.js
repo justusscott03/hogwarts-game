@@ -812,18 +812,17 @@ var SpellSheet = (function () {
 
 var Player = (function () {
     
-    var _Player = function (x, y, w, h) {
+    var _Player = function (x, y, s) {
         this.x = x;
         this.y = y;
-        this.w = w;
-        this.h = h;
+        this.s = s;
         
         this.velx = 0;
         this.vely = 0;
         this.maxSpeed = 3;
         
         this.r = 0;
-        this.s = 1;
+        this.scale = 1;
         
         this.witchOrWizard = null;
         this.wand = 0;
@@ -929,74 +928,74 @@ var Player = (function () {
             pushMatrix();
                 translate(this.x, this.y);
                 rotate(this.r);
-                scale(this.s);
+                scale(this.scale);
                 
                 // Wand
                 pushMatrix();
                     rotate(180);
                     if (images["wand" + this.wand] !== undefined) {
-                        image(images["wand" + this.wand], this.w / 8, -this.h / 0.9, this.w / 1.5, this.h / 1.5);
+                        image(images["wand" + this.wand], this.s / 8, -this.s / 0.9, this.s / 1.5, this.s / 1.5);
                     }
                 popMatrix();
                 
                 // Body
                 fill(this.skinTone);
-                ellipse(0, 0, this.w, this.h);
-                ellipse(-this.w / 2.25, this.h / 2.25, this.w / 3.25, this.h / 3.25);
-                ellipse(this.w / 2.25, this.h / 2.25, this.w / 3.25, this.h / 3.25);
+                ellipse(0, 0, this.s, this.s);
+                ellipse(-this.s / 2.25, this.s / 2.25, this.s / 3.25, this.s / 3.25);
+                ellipse(this.s / 2.25, this.s / 2.25, this.s / 3.25, this.s / 3.25);
                 fill(255, 255, 255, 30);
-                ellipse(-this.w / 50, -this.h / 50, this.w / 1.15, this.h / 1.15);
-                ellipse(-this.w / 2.205, this.h / 2.295, this.w / 3.7375, this.h / 3.7375);
-                ellipse(this.w / 2.295, this.h / 2.295, this.w / 3.7375, this.h / 3.7375);
+                ellipse(-this.s / 50, -this.s / 50, this.s / 1.15, this.s / 1.15);
+                ellipse(-this.s / 2.205, this.s / 2.295, this.s / 3.7375, this.s / 3.7375);
+                ellipse(this.s / 2.295, this.s / 2.295, this.s / 3.7375, this.s / 3.7375);
                 
                 // Eyes
                 fill(255);
-                ellipse(-this.w / 5, this.h / 5, this.w / 5, this.h * 4 / 15);
-                ellipse(this.w / 5, this.h / 5, this.w / 5, this.h * 4 / 15);
+                ellipse(-this.s / 5, this.s / 5, this.s / 5, this.s * 4 / 15);
+                ellipse(this.s / 5, this.s / 5, this.s / 5, this.s * 4 / 15);
                 
                 fill(this.eyeColor);
-                arc(this.w / 5, this.h * 6 / 25, this.w * 29 / 150, this.h / 7, 180, 360);
-                arc(-this.w / 5, this.h * 6 / 25, this.w * 29 / 150, this.h / 7, 180, 360);
+                arc(this.s / 5, this.s * 6 / 25, this.s * 29 / 150, this.s / 7, 180, 360);
+                arc(-this.s / 5, this.s * 6 / 25, this.s * 29 / 150, this.s / 7, 180, 360);
                 
                 fill(0);
-                arc(-this.w / 5, this.h * 7 / 30, this.w * 29 / 150, this.h / 5, 0, 180);
-                arc(-this.w / 5, this.h * 6 / 25, this.w * 14 / 75, this.h / 10, 180, 360);
+                arc(-this.s / 5, this.s * 7 / 30, this.s * 29 / 150, this.s / 5, 0, 180);
+                arc(-this.s / 5, this.s * 6 / 25, this.s * 14 / 75, this.s / 10, 180, 360);
                 
-                arc(this.w / 5, this.h * 7 / 30, this.w * 29 / 150, this.h / 5, 0, 180);
-                arc(this.w / 5, this.h * 6 / 25, this.w * 14 / 75, this.h / 10, 180, 360);
+                arc(this.s / 5, this.s * 7 / 30, this.s * 29 / 150, this.s / 5, 0, 180);
+                arc(this.s / 5, this.s * 6 / 25, this.s * 14 / 75, this.s / 10, 180, 360);
                 
                 // Cloak
                 fill(this.cloakColor);
                 beginShape();
-                    curveVertex(-this.w / 10.2, this.h / 2.1);
-                    curveVertex(-this.w / 1.9, this.h / 30);
-                    curveVertex(-this.w / 2.6, -this.h / 2.7);
-                    curveVertex(-this.w / 4.6, -this.h / 1.7);
-                    curveVertex(-this.w / 12.5, -this.h / 1.2);
-                    curveVertex(this.w / 4, -this.h / 1.97);
-                    curveVertex(this.w / 2, -this.h / 6.9);
-                    curveVertex(this.w / 2, this.h / 5.7);
-                    curveVertex(this.w / 3.4, this.h / 22.6);
-                    curveVertex(this.w / 18.5, this.h / 11.5);
-                    curveVertex(-this.w / 3.9, this.h / 25.8);
-                    curveVertex(-this.w / 2.4, this.h / 9.0);
-                    curveVertex(-this.w / 2.1, this.h / 5.0);
-                    curveVertex(-this.w / 2.5, this.h / 8.2);
+                    curveVertex(-this.s / 10.2, this.s / 2.1);
+                    curveVertex(-this.s / 1.9, this.s / 30);
+                    curveVertex(-this.s / 2.6, -this.s / 2.7);
+                    curveVertex(-this.s / 4.6, -this.s / 1.7);
+                    curveVertex(-this.s / 12.5, -this.s / 1.2);
+                    curveVertex(this.s / 4, -this.s / 1.97);
+                    curveVertex(this.s / 2, -this.s / 6.9);
+                    curveVertex(this.s / 2, this.s / 5.7);
+                    curveVertex(this.s / 3.4, this.s / 22.6);
+                    curveVertex(this.s / 18.5, this.s / 11.5);
+                    curveVertex(-this.s / 3.9, this.s / 25.8);
+                    curveVertex(-this.s / 2.4, this.s / 9.0);
+                    curveVertex(-this.s / 2.1, this.s / 5.0);
+                    curveVertex(-this.s / 2.5, this.s / 8.2);
                 endShape();
                 
                 fill(0, 0, 0, 30);
                 beginShape();
-                    curveVertex(-this.w / 4.6, -this.h / 1.7);
-                    curveVertex(-this.w / 12.5, -this.h / 1.2);
-                    curveVertex(this.w / 4, -this.h / 1.97);
-                    curveVertex(this.w / 2, -this.h / 6.9);
-                    curveVertex(this.w / 2, this.h / 5.7);
-                    curveVertex(this.w / 3.4, this.h / 22.6);
-                    curveVertex(this.w / 18.5, this.h / 13.7);
-                    curveVertex(-this.w / 132, -this.h / 9.2);
-                    curveVertex(-this.w / 14, -this.h / 2.4);
-                    curveVertex(-this.w / 28.5, -this.h / 1.5);
-                    curveVertex(-this.w / 6.7, this.h / 13.3);
+                    curveVertex(-this.s / 4.6, -this.s / 1.7);
+                    curveVertex(-this.s / 12.5, -this.s / 1.2);
+                    curveVertex(this.s / 4, -this.s / 1.97);
+                    curveVertex(this.s / 2, -this.s / 6.9);
+                    curveVertex(this.s / 2, this.s / 5.7);
+                    curveVertex(this.s / 3.4, this.s / 22.6);
+                    curveVertex(this.s / 18.5, this.s / 13.7);
+                    curveVertex(-this.s / 132, -this.s / 9.2);
+                    curveVertex(-this.s / 14, -this.s / 2.4);
+                    curveVertex(-this.s / 28.5, -this.s / 1.5);
+                    curveVertex(-this.s / 6.7, this.s / 13.3);
                 endShape();
             popMatrix();
             
@@ -1014,7 +1013,31 @@ var Player = (function () {
     
 }) ();
 
-var player = new Player(300, 300, 75, 75);
+var player = new Player(300, 300, 75);
+
+//]
+
+/** Goblin **/
+// [
+
+var Goblin = (function () {
+
+    var _Goblin = function (x, y, s, type) {
+        this.x = x;
+        this.y = y;
+        this.s = s;
+        this.type = type;
+        this.r = 0;
+        this.scale = 1;
+    };
+    
+    _Goblin.prototype = {
+        
+        draw : function () {}
+        
+    };
+
+}) ();
 
 //]
 
@@ -1045,16 +1068,16 @@ var CollisionBox = (function () {
             
             if (dist(player.x, player.y, this.x, this.y) < 1000) {
                 if (this.type === "circ") {
-                    if (player.circCol(this.x, this.y, this.w, player.x, player.y, player.w)) {
+                    if (player.circCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
                         var angle = Math.atan2(this.x - player.x, this.y - player.y);
                         
-                        this.x = player.x - Math.cos(angle + 1.55) * (player.w / 2 + this.w / 2);
-                        this.y = player.y + Math.sin(angle + 1.55) * (player.w / 2 + this.w / 2);
+                        this.x = player.x - Math.cos(angle + 1.55) * (player.s / 2 + this.w / 2);
+                        this.y = player.y + Math.sin(angle + 1.55) * (player.s / 2 + this.w / 2);
                     }
                 }
                 
                 if (this.type === "rect") {
-                    if (player.rectCol(this.x, this.y, this.w, this.h, player.x, player.y, player.w / 2)) {
+                    if (player.rectCol(this.x, this.y, this.w, this.h, player.x, player.y, player.s / 2)) {
                         if (player.x < this.x) {
                             player.x -= player.maxSpeed;
                         }
@@ -1399,7 +1422,7 @@ draw = function () {
                     player.draw();
                     
                     if (creationIndex === 1) {
-                        player.s = 2;
+                        player.scale = 2;
                         
                         charCreateLeft.draw();
                         charCreateRight.draw();
@@ -1409,7 +1432,7 @@ draw = function () {
                         charCreateNext.draw();
                     }
                     else if (creationIndex === 2) {
-                        player.s = lerp(player.s, 1, 0.1);
+                        player.scale = lerp(player.scale, 1, 0.1);
                         player.x = lerp(player.x, 75, 0.1);
                         player.y = lerp(player.y, 75, 0.1);
                         player.name.first = firstName.txt;
