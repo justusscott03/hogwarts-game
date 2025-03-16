@@ -1,4 +1,4 @@
-Attack speed: low,
-Damage: high,
-Range: high,
-Movement speed: low
+Attack speed: medium low,
+Damage: very high,
+Range: low,
+Movement speed: medium low

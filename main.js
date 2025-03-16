@@ -1460,7 +1460,7 @@ draw = function () {
                     cam.x = 300 - player.x;
                     cam.y = 300 - player.y;
                     
-                    player.r = (Math.atan2(mouseY - 300, mouseX - 300) * (180 / Math.PI)) - 90;
+                    player.r = atan2(mouseY - 300, mouseX - 300) - 90;
                     
                     pushMatrix();
                         translate(cam.x, cam.y);
@@ -1502,3 +1502,4 @@ mouseClicked = function () {
 };
 
 //]
+
