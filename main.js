@@ -4,6 +4,8 @@ Credit to SP(@Prodigy6) for the outlined text and camera from their project, The
 
 Credit to Vicioustrex(@Vicioustrex) for the circle-to-circle and circle-to-rect collisions and spell casting from their project, Airsoft Battle: https://www.khanacademy.org/computer-programming/airsoft-battle/6722101637464064
 
+Credit to NonPlayerCharacter (he/him)(@JustASideQuestNPC) for the gamepad compatibility from their project, Gamepad Input! (Yes, really): https://www.khanacademy.org/computer-programming/gamepad-input-yes-really/6269103118401536
+
 **/
 
 /** Lots of variables **/
@@ -58,6 +60,7 @@ var notReady = {
 
 //}
 
+// Camera
 var cam = {
     x : 0,
     y : 0
@@ -92,6 +95,181 @@ keyReleased = function () {
 
 var typed = false;
 var clicked = false;
+
+//]
+
+/** Gamepad compatibility **/
+// [
+
+var Gamepad = (function () {
+
+    function _Gamepad (innerDeadzone, outerDeadzone, padIndex) {
+        padIndex = (padIndex !== undefined ? padIndex : -1);
+        innerDeadzone = (innerDeadzone !== undefined ? innerDeadzone : 0.1);
+        outerDeadzone = (outerDeadzone !== undefined ? outerDeadzone : 0.05);
+        
+        this._getGamepad = function() { return null; };
+        
+        var DISABLE_GAMEPAD = DISABLE_GAMEPAD || false;
+        if (!DISABLE_GAMEPAD) {
+            
+            var navigator = (function () { return this.navigator; }) ();
+            
+            if (typeof navigator.webkitGetGamepads === "function") {
+                if (padIndex === -1) {
+                    // Written by Mushy Avocado
+                    this._getGamepad = function () {
+                        var gamepads = navigator.webkitGetGamepads();
+                        return gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3] || null;
+                    };
+                }
+                else {
+                    this._getGamepad = function () {
+                        return navigator.webkitGetGamepads()[padIndex] || null;
+                    };
+                }
+            }
+            else if (typeof navigator.getGamepads === "function") {
+                if (padIndex === -1) {
+                    // Written by Mushy Avocado
+                    this._getGamepad = function () {
+                        var gamepads = navigator.getGamepads();
+                        return gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3] || null;
+                    };
+                }
+                else {
+                    this._getGamepad = function () {
+                        return navigator.getGamepads()[padIndex] || null;
+                    };
+                }
+            }
+        }
+        
+        this._gamepad = null;
+        this._innerDeadzone = innerDeadzone;
+        this._outerDeadzone = outerDeadzone;
+    }
+    
+    _Gamepad.prototype = {
+        
+        updateConnection : function () {
+            this._gamepad = this._getGamepad();
+        },
+        
+        isConnected : function () {
+            return this._gamepad !== null;
+        },
+        
+        isPressed : function (button) {
+            if (this._gamepad !== null) {
+                var index = Gamepad._buttonCodes[button];
+                if (button === "left trigger" || button === "right trigger") {
+                    if (this._gamepad.axes[index - 2] !== undefined) {
+                        return this._gamepad.axes[index - 2] === 1;
+                    }
+                    return this._gamepad.buttons[index].value === 1;
+                }
+                return this._gamepad.buttons[index].pressed;
+            }
+            
+            return false;
+        },
+        
+        axisValue : function (axis, rawValue) {
+            rawValue = (rawValue !== undefined ? rawValue : false);
+            
+            if (this._gamepad !== null) {
+                if (axis === "left trigger") {
+                    if (this._gamepad.axes[4] !== undefined) {
+                        return map(this._gamepad.axes[4], -1, 1, 0, 1);
+                    }
+                    return this._gamepad.buttons[6].value;
+                }
+                if (axis === "right trigger") {
+                    if (this._gamepad.axes[5] !== undefined) {
+                        return map(this._gamepad.axes[5], -1, 1, 0, 1);
+                    }
+                    return this._gamepad.buttons[7].value;
+                }
+                
+                var value;
+                if (axis === "left stick x") {
+                    value = this._gamepad.axes[0];
+                }
+                else if (axis === "left stick y") {
+                    value = this._gamepad.axes[1];
+                }
+                else if (axis === "right stick x") {
+                    value = this._gamepad.axes[2];
+                }
+                else if (axis === "right stick y") {
+                    value = this._gamepad.axes[3];
+                }
+                
+                if (rawValue) { return value; }
+                return this._applyDeadzone(
+                    value,
+                    this._innerDeadzone,
+                    this._outerDeadzone
+                );
+            }
+            
+            return 0;
+        },
+        
+        stickPos : function (stick, rawValue) {
+            return new PVector(
+                this.axisValue(stick + " stick x", rawValue),
+                this.axisValue(stick + " stick y", rawValue)
+            );
+        },
+        
+        stickVector : function (stick) {
+            var v = this.stickPos(stick);
+            v.normalize();
+            return v;
+        },
+        
+        _applyDeadzone : function (value, inner, outer) {
+            outer = 1 - outer;
+            if (value < 0) {
+                if (value >= -inner) { return 0; }
+                if (value <= -outer) { return -1; }
+                return map(value, -outer, -inner, -1, 0);
+            }
+            else {
+                if (value <= inner) { return 0; }
+                if (value >= outer) { return 1; }
+                return map(value, inner, outer, 0, 1);
+            }
+        }
+        
+    };
+    
+    _Gamepad._buttonCodes = {
+        "b": 0, // x (cross)
+        "a": 1, // circle
+        "y": 2, // square
+        "x": 3, // triangle
+        "left bumper": 4, // l1
+        "right bumper": 5, // r1
+        "left trigger": 6, // l2; full pull only
+        "right trigger": 7, // r2; full pull only
+        "share": 8,
+        "options": 9,
+        "left stick click": 10, // l3
+        "right stick click": 11, // r3
+        "dpad up": 12, 
+        "dpad down": 13,
+        "dpad left": 14,
+        "dpad right": 15,
+    };
+    
+    return _Gamepad;
+
+}) ();
+
+var gamepad = new Gamepad();
 
 //]
 
@@ -543,8 +721,16 @@ var Cursor = (function () {
     _Cursor.prototype = {
         
         update : function () {
-            this.x = mouseX;
-            this.y = mouseY;
+            if (!gamepad.isConnected()) {
+                this.x = mouseX;
+                this.y = mouseY;
+            }
+            else {
+                var leftStick = gamepad.stickPos("left");
+                
+                this.x += leftStick.x * 5;
+                this.y += leftStick.y * 5;
+            }
         },
         
         draw : function () {
@@ -565,7 +751,7 @@ var Cursor = (function () {
 }) ();
 
 // Intentional mispelling because of Oh Noes error
-var cursro = new Cursor();
+var cursro = new Cursor(300, 300);
 
 //]
 
@@ -839,6 +1025,9 @@ var Player = (function () {
         this.castReload = 0;
         this.reloading = false;
         this.selectedSpell = spells[0];
+        
+        this.curState = false;
+        this.prevState = false;
     };
     
     _Player.prototype = {
@@ -910,9 +1099,21 @@ var Player = (function () {
                     }
                 }
                 
-                if (clicked && !this.reloading) {
-                    spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
-                    this.reloading = true;
+                if (!this.reloading) {
+                    if (clicked && !gamepad.isConnected()) {
+                        spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
+                        this.reloading = true;
+                    }
+                    else if (gamepad.isConnected()) {
+                        this.curState = gamepad.isPressed("right trigger");
+                        
+                        if (!this.curState && this.prevState) {
+                            spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
+                            this.reloading = true;
+                        }
+                        
+                        this.prevState = this.curState;
+                    }
                 }
             }
         },
@@ -1132,26 +1333,44 @@ var Input = (function () {
         this.blinkTimer = 0;
         this.selected = false;
         this.mouseOver = false;
+        
+        this.curState = false;
+        this.prevState = false;
     };
     
     _Input.prototype = {
         
         draw : function () {
-            this.mouseOver = mouseX > this.x &&
-                             mouseX < this.x + this.w &&
-                             mouseY > this.y &&
-                             mouseY < this.y + this.h;
+            this.mouseOver = cursro.x > this.x &&
+                             cursro.x < this.x + this.w &&
+                             cursro.y > this.y &&
+                             cursro.y < this.y + this.h;
              
             if (this.mouseOver) {
                 cursor("pointer");
             }
-            if (clicked) {
+            
+            if (clicked && !gamepad.isConnected()) {
                 if (this.mouseOver) {
                     this.selected = true;
                 }
                 else {
                     this.selected = false;
                 }
+            }
+            else if (gamepad.isConnected()) {
+                this.curState = gamepad.isPressed("a");
+                
+                if (!this.urState && this.prevState) {
+                    if (this.mouseOver) {
+                        this.selected = true;
+                    }
+                    else {
+                        this.selected = false;
+                    }
+                }
+                
+                this.prevState = this.curState;
             }
             
             this.blinkTimer++;
@@ -1225,21 +1444,24 @@ var Button = (function () {
         this.fade = (this.type.includes("default") ? 100 : 0);
         
         this.s = 1;
+        
+        this.curState = false;
+        this.prevState = false;
     };
     
     _Button.prototype = {
         
         draw : function () {
             
-            this.mouseOver = mouseX > this.x &&
-                             mouseX < this.x + this.w &&
-                             mouseY > this.y &&
-                             mouseY < this.y + this.h;
+            this.mouseOver = cursro.x > this.x &&
+                             cursro.x < this.x + this.w &&
+                             cursro.y > this.y &&
+                             cursro.y < this.y + this.h;
                              
             if (this.mouseOver) {
                 cursor("pointer");
                 this.s = lerp(this.s, 1.05, 0.1);
-                if (clicked) {
+                if (clicked && !gamepad.isConnected()) {
                     this.func();
                     if (this.type.includes("fadeSelect")) {
                         for (var i = 0; i < selectedButtons.length; i++) {
@@ -1249,6 +1471,23 @@ var Button = (function () {
                         }
                         selectedButtons.push(this);
                     }
+                }
+                else if (gamepad.isConnected()) {
+                    this.curState = gamepad.isPressed("a");
+                    
+                    if (!this.curState && this.prevState) {
+                        this.func();
+                        if (this.type.includes("fadeSelect")) {
+                            for (var i = 0; i < selectedButtons.length; i++) {
+                                if (selectedButtons[i].type2 === this.type2) {
+                                    selectedButtons.splice(i, 1);
+                                }
+                            }
+                            selectedButtons.push(this);
+                        }
+                    }
+                    
+                    this.prevState = this.curState;
                 }
             }
             else {
@@ -1411,6 +1650,9 @@ var PLAY = new Button(225, 325, 150, 150, function () {
 draw = function () {
     try {
         cursor("auto");
+        
+        gamepad.updateConnection();
+        
         if (!loaded) {
             load();
         }
@@ -1437,6 +1679,7 @@ draw = function () {
                         player.y = lerp(player.y, 75, 0.1);
                         player.name.first = firstName.txt;
                         player.name.last = lastName.txt;
+                        
                         
                         firstName.draw();
                         lastName.draw();
@@ -1483,7 +1726,16 @@ draw = function () {
                     cam.x = 300 - player.x;
                     cam.y = 300 - player.y;
                     
-                    player.r = atan2(mouseY - 300, mouseX - 300) - 90;
+                    if (!gamepad.isConnected()) {
+                        player.r = atan2(mouseY - 300, mouseX - 300) - 90;
+                    }
+                    else {
+                        var leftStick = gamepad.stickPos("left");
+                        
+                        if (leftStick.y > 0.5 || leftStick.y < -0.5 || leftStick.x > 0.5 || leftStick.x < -0.5) {
+                            player.r = atan2(leftStick.y, leftStick.x) - 90;
+                        }
+                    }
                     
                     pushMatrix();
                         translate(cam.x, cam.y);
