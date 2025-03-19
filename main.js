@@ -60,11 +60,67 @@ var notReady = {
 
 //}
 
-// Camera
 var cam = {
     x : 0,
     y : 0
 };
+
+// Goblin data {
+
+var goblinData = {
+    assasin : {
+        health : 400,
+        attackSpeed : 120,
+        range : 90,
+        damage : 80,
+        moveSpeed : 0
+    },
+    commander : {
+        health : 700,
+        attackSpeed : 180,
+        range : 100,
+        damage : 120,
+        moveSpeed : 0
+    },
+    ranger : {
+        health : 200,
+        attackSpeed : 240,
+        range : 400,
+        damage : 40,
+        moveSpeed : 0
+    },
+    sentinel : {
+        health : 500,
+        attackSpeed : 240,
+        range : 80,
+        damage : 70,
+        moveSpeed : 0
+    },
+    warrior : {
+        health : 300,
+        attackSpeed : 360,
+        range : 60,
+        damage : 60,
+        moveSpeed : 0
+    }
+};
+
+//}
+
+// Spell data {
+
+var spells = {
+    basicCast : {
+        name : "basicCast",
+        damage : 5,
+        knockback : 0,
+        stun : false,
+        reload : 10,
+        speed : 15
+    },
+};
+
+//}
 
 //]
 
@@ -95,6 +151,31 @@ keyReleased = function () {
 
 var typed = false;
 var clicked = false;
+
+//]
+
+/** Collision **/
+// [
+
+var rectCircCol =  function (rx, ry, rw, rh, cx, cy, cr) {
+    var clx = Math.max(rx, Math.min(cx, rx + rw));
+    var cly = Math.max(ry, Math.min(cy, ry + rh));
+    
+    var dx = cx - clx;
+    var dy = cy - cly;
+    var ds = dx * dx + dy * dy;
+    
+    return ds < cr * cr;
+};
+
+var circCircCol = function (cx, cy, cd, cx2, cy2, cd2) {
+    if (dist(cx, cy, cx2, cy2) < cd / 2 + cd2 / 2) {
+        return true;
+    } 
+    else {
+        return false;
+    }
+};
 
 //]
 
@@ -812,13 +893,13 @@ var sceneChange = new SceneChange();
 
 var SpellCast = (function () {
     
-    var _SpellCast = function (x, y, w, h, r, type, maxSpeed) {
+    var _SpellCast = function (x, y, w, h, r, name, maxSpeed) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
         this.r = r;
-        this.type = type;
+        this.name = name;
         
         this.velx = 0;
         this.vely = 0;
@@ -833,19 +914,10 @@ var SpellCast = (function () {
     
     _SpellCast.prototype = {
         
-        draw : function () {
-            pushMatrix();
-                translate(this.x, this.y);
-                rotate(this.r);
-                translate(-this.x, -this.y);
-                image(images[this.type], this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
-            popMatrix();
-        },
-        
         update : function () {
             this.flyTime++;
             
-            if (this.flyTime > 300) {
+            if (this.flyTime > 150) {
                 this.visible = false;
             }
             
@@ -854,7 +926,18 @@ var SpellCast = (function () {
             
             this.x += this.velx;
             this.y += this.vely;
-        }
+        },
+        
+        draw : function () {
+            pushMatrix();
+                translate(this.x, this.y);
+                rotate(this.r);
+                translate(-this.x, -this.y);
+                image(images[this.name], this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
+            popMatrix();
+            fill(0);
+            rect(this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
+        },
         
     };
     
@@ -863,22 +946,6 @@ var SpellCast = (function () {
 }) ();
 
 var spellCasts = [];
-
-//]
-
-/** Spell objects **/
-// [
-
-var spells = [
-    {
-        name : "basicCast",
-        damage : 5,
-        knockback : 0,
-        stun : false,
-        reload : 10,
-        speed : 10
-    },
-];
 
 //]
 
@@ -1024,33 +1091,13 @@ var Player = (function () {
         this.health = 100;
         this.castReload = 0;
         this.reloading = false;
-        this.selectedSpell = spells[0];
+        this.selectedSpell = spells.basicCast;
         
         this.curState = false;
         this.prevState = false;
     };
     
     _Player.prototype = {
-        
-        rectCol : function (rx, ry, rw, rh, cx, cy, cr) {
-            var clx = Math.max(rx, Math.min(cx, rx + rw));
-            var cly = Math.max(ry, Math.min(cy, ry + rh));
-            
-            var dx = cx - clx;
-            var dy = cy - cly;
-            var ds = dx * dx + dy * dy;
-            
-            return ds < cr * cr;
-        },
-        
-        circCol : function (cx, cy, cd, cx2, cy2, cd2) {
-            if (dist(cx, cy, cx2, cy2) < cd / 2 + cd2 / 2) {
-                return true;
-            } 
-            else {
-                return false;
-            }
-        },
         
         update : function () {
             if (!this.dead) {
@@ -1223,22 +1270,72 @@ var player = new Player(300, 300, 75);
 
 var Goblin = (function () {
 
-    var _Goblin = function (x, y, s, type) {
+    var _Goblin = function (x, y, s, type, level) {
         this.x = x;
         this.y = y;
         this.s = s;
         this.type = type;
         this.r = 0;
         this.scale = 1;
+        
+        this.dead = false;
+        this.rendered = false;
+        
+        this.data = goblinData[this.type];
+        this.level = level;
+        
+        this.health = (this.data.health * this.level) - ((this.level - 1) * 25);
     };
     
     _Goblin.prototype = {
         
-        draw : function () {}
+        update : function () {
+            
+            if (!this.dead) {
+                this.r = atan2(player.y - this.y, player.x - this.x) - 90;
+            }
+            
+            if (dist(this.x, this.y, player.x, player.y) < 1000) {
+                this.rendered = true;
+            }
+            else {
+                this.rendered = false;
+            }
+            
+        },
+        
+        draw : function () {
+            
+            if (this.rendered) {
+                pushMatrix();
+                    translate(this.x, this.y);
+                    rotate(this.r);
+                    scale(this.scale);
+                    noStroke();
+                    fill(0);
+                    ellipse(0, 0, this.s, this.s);
+                    
+                    fill(255);
+                    ellipse(0, this.s / 4, this.s / 8, this.s / 8);
+                popMatrix();
+            }
+            
+        },
+        
+        damage : function (spell) {
+            this.health -= spells[spell].damage;
+        }
         
     };
 
+    return _Goblin;
+
 }) ();
+
+var goblins = [];
+goblins.add = function (x, y, s, type, level) {
+    this.push(new Goblin(x, y, s, type, level));
+};
 
 //]
 
@@ -1267,9 +1364,9 @@ var CollisionBox = (function () {
                 ellipse(this.x, this.y, this.w, this.h);
             }
             
-            if (dist(player.x, player.y, this.x, this.y) < 1000) {
+            if (dist(player.x, player.y, this.x, this.y) < 600) {
                 if (this.type === "circ") {
-                    if (player.circCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
+                    if (circCircCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
                         var angle = Math.atan2(this.x - player.x, this.y - player.y);
                         
                         this.x = player.x - Math.cos(angle + 1.55) * (player.s / 2 + this.w / 2);
@@ -1278,7 +1375,7 @@ var CollisionBox = (function () {
                 }
                 
                 if (this.type === "rect") {
-                    if (player.rectCol(this.x, this.y, this.w, this.h, player.x, player.y, player.s / 2)) {
+                    if (rectCircCol(this.x, this.y, this.w, this.h, player.x, player.y, player.s / 2)) {
                         if (player.x < this.x) {
                             player.x -= player.maxSpeed;
                         }
@@ -1290,6 +1387,38 @@ var CollisionBox = (function () {
                         }
                         if (player.y > this.y + this.h) {
                             player.y += player.maxSpeed;
+                        }
+                    }
+                }
+            }
+            
+            for (var i = 0; i < goblins.length; i++) {
+                var g = goblins[i];
+                
+                if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600) {
+                    if (this.type === "circ") {
+                        if (circCircCol(this.x, this.y, this.w, g.x, g.y, g.s)) {
+                            var angle = Math.atan2(this.x - g.x, this.y - g.y);
+                            
+                            this.x = g.x - Math.cos(angle + 1.55) * (g.s / 2 + this.w / 2);
+                            this.y = g.y + Math.sin(angle + 1.55) * (g.s / 2 + this.w / 2);
+                        }
+                    }
+                    
+                    if (this.type === "rect") {
+                        if (rectCircCol(this.x, this.y, this.w, this.h, g.x, g.y, g.s / 2)) {
+                            if (g.x < this.x) {
+                                g.x -= g.maxSpeed;
+                            }
+                            if (g.y < this.y) {
+                                g.y -= g.maxSpeed;
+                            }
+                            if (g.x > this.x + this.w) {
+                                g.x += g.maxSpeed;
+                            }
+                            if (g.y > this.y + this.h) {
+                                g.y += g.maxSpeed;
+                            }
                         }
                     }
                 }
@@ -1314,6 +1443,7 @@ collisionBoxes.add = function (x, y, w, h, type) {
 
 var loadMap = function () {
     collisionBoxes.add(500, 500, 200, 200, "rect");
+    goblins.add(300, 300, 75, "assasin", 20);
 };
 loadMap();
 
@@ -1751,8 +1881,20 @@ draw = function () {
                             spellCasts[i].draw();
                             if (!spellCasts[i].visible) {
                                 spellCasts.splice(i, 1);
-                                i--;
                             }
+                            for (var j = 0; j < goblins.length; j++) {
+                                if (spellCasts.length !== 0) {
+                                    if (rectCircCol(spellCasts[i].x - spellCasts[i].w / 2, spellCasts[i].y - spellCasts[i].h * 2 / 3, spellCasts[i].w, spellCasts[i].h, goblins[j].x, goblins[j].y, goblins[j].s / 2)) {
+                                        goblins[j].damage(spellCasts[i].name);
+                                        spellCasts.splice(i, 1);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        for (var i = 0; i < goblins.length; i++) {
+                            goblins[i].update();
+                            goblins[i].draw();
                         }
                     popMatrix();
                 } break;
