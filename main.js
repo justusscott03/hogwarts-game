@@ -2,7 +2,7 @@
 
 Credit to SP(@Prodigy6) for the outlined text and camera from their project, The Temple of Itzomar: https://www.khanacademy.org/computer-programming/the-temple-of-itzomar/6253229457391616
 
-Credit to Vicioustrex(@Vicioustrex) for the circle-to-circle and circle-to-rect collisions and spell casting from their project, Airsoft Battle: https://www.khanacademy.org/computer-programming/airsoft-battle/6722101637464064
+Credit to Vicioustrex(@Vicioustrex) for the circle-to-circle and circle-to-rect collisions from their project, Airsoft Battle: https://www.khanacademy.org/computer-programming/airsoft-battle/6722101637464064
 
 Credit to NonPlayerCharacter (he/him)(@JustASideQuestNPC) for the gamepad compatibility from their project, Gamepad Input! (Yes, really): https://www.khanacademy.org/computer-programming/gamepad-input-yes-really/6269103118401536
 
@@ -407,6 +407,44 @@ var images = {
         bkg.noStroke();
         for (var i = 0; i < 100; i++) {
             var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
+        
+        bkg = bkg.get();
+        
+        bkg.mask(msk);
+        
+        image(bkg, 0, 0);
+        
+        noFill();
+        strokeWeight(4);
+        stroke(176, 123, 0);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        strokeWeight(1);
+        stroke(255);
+        quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        return get(0, 0, 100, 100);
+        
+    },
+    control : function () {
+        
+        background(0, 0, 0, 0);
+        
+        var msk = createGraphics(width, height, P2D);
+        
+        msk.background(0, 0, 0, 0);
+        
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        
+        msk = msk.get();
+        
+        var bkg = createGraphics(width, height, P2D);
+        
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
             bkg.fill(lerpC);
             bkg.rect(0, i, 100, 1);
         }
@@ -935,8 +973,6 @@ var SpellCast = (function () {
                 translate(-this.x, -this.y);
                 image(images[this.name], this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
             popMatrix();
-            fill(0);
-            rect(this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
         },
         
     };
@@ -969,22 +1005,26 @@ var Spell = (function () {
     };
     
     _Spell.prototype = {
+        
+        use : function () {
+            this.s = 0.9;
+            this.reloading = true;
+        },
     
         update : function () {
-            if (this.type === "force") {
+            if (this.type === "control") {
                 this.maxReload = 200;
             }
+            if (this.type === "force") {
+                this.maxReload = 500;
+            }
             if (this.type === "power") {
-                this.maxReload = 400;
+                this.maxReload = 800;
             }
             if (this.type === "forbidden") {
-                this.maxReload = 1000;
+                this.maxReload = 1500;
             }
             
-            if (clicked && dist(this.x + this.w / 2, this.y + this.h / 2, mouseX, mouseY) < this.w / 2 && !this.reloading) {
-                this.s = 0.9;
-                this.reloading = true;
-            }
             this.s = lerp(this.s, 1, 0.1);
             
             if (this.reloading) {
@@ -1023,8 +1063,15 @@ var Spell = (function () {
         }
     
     };
+    
+    return _Spell;
 
 }) ();
+
+var spell1 = new Spell(530, 490, 60, 60, "power");
+var spell2 = new Spell(490, 530, 60, 60, "forbidden");
+var spell3 = new Spell(450, 490, 60, 60, "force");
+var spell4 = new Spell(490, 450, 60, 60, "control");
 
 //]
 
@@ -1038,25 +1085,32 @@ var SpellSheet = (function () {
         this.spell2 = spell2;
         this.spell3 = spell3;
         this.spell4 = spell4;
+        
+        this.spells = [spell1, spell2, spell3, spell4];
     };
     
     _SpellSheet.prototype = {
         
         draw : function () {
-            this.spell1.update();
-            this.spell2.update();
-            this.spell3.update();
-            this.spell4.update();
-            
-            this.spell1.draw();
-            this.spell2.draw();
-            this.spell3.draw();
-            this.spell4.draw();
+            for (var i = 0; i < this.spells.length; i++) {
+                this.spells[i].update();
+                this.spells[i].draw();
+                
+                if (typed && key.code === i + 49) {
+                    this.spells[i].use();
+                }
+            }
         }
         
     };
+    
+    return _SpellSheet;
 
 }) ();
+
+var spellSheet = new SpellSheet(spell1, spell2, spell3, spell4);
+
+
 
 //]
 
@@ -1342,7 +1396,6 @@ goblins.add = function (x, y, s, type, level) {
 /** Collision box **/
 // [
 
-// Yes I know this is repetitive and confusing
 var CollisionBox = (function () {
 
     var _CollisionBox = function (x, y, w, h, type) {
@@ -1367,10 +1420,10 @@ var CollisionBox = (function () {
             if (dist(player.x, player.y, this.x, this.y) < 600) {
                 if (this.type === "circ") {
                     if (circCircCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
-                        var angle = Math.atan2(this.x - player.x, this.y - player.y);
+                        var angle = atan2(player.x - this.x, player.y - this.y);
                         
-                        this.x = player.x - Math.cos(angle + 1.55) * (player.s / 2 + this.w / 2);
-                        this.y = player.y + Math.sin(angle + 1.55) * (player.s / 2 + this.w / 2);
+                        player.x = this.x - cos(angle + 90) * (this.w / 2 + player.s / 2);
+                        player.y = this.y + sin(angle + 90) * (this.w / 2 + player.s / 2);
                     }
                 }
                 
@@ -1398,10 +1451,10 @@ var CollisionBox = (function () {
                 if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600) {
                     if (this.type === "circ") {
                         if (circCircCol(this.x, this.y, this.w, g.x, g.y, g.s)) {
-                            var angle = Math.atan2(this.x - g.x, this.y - g.y);
+                            var angle = Math.atan2(g.x - this.x, g.y - this.y);
                             
-                            this.x = g.x - Math.cos(angle + 1.55) * (g.s / 2 + this.w / 2);
-                            this.y = g.y + Math.sin(angle + 1.55) * (g.s / 2 + this.w / 2);
+                            g.x = this.x - cos(angle + 90) * (g.s / 2 + this.w / 2);
+                            g.y = this.y + sin(angle + 90) * (g.s / 2 + this.w / 2);
                         }
                     }
                     
@@ -1423,7 +1476,16 @@ var CollisionBox = (function () {
                     }
                 }
             }
-        },
+            
+            for (var i = spellCasts.length - 1; i >= 0; i--) {
+                var s = spellCasts[i];
+                if (dist(this.x, this.y, s.x, s.y) < 600) {
+                    if ((this.type === "circ" && circCircCol(s.x, s.y, s.w, this.x, this.y, this.w)) || (this.type === "rect" && rectCircCol(this.x, this.y, this.w, this.h, s.x, s.y, s.w / 2))) {
+                        spellCasts.splice(i, 1);
+                    }
+                }
+            }
+        }
         
     };
     
@@ -1443,6 +1505,7 @@ collisionBoxes.add = function (x, y, w, h, type) {
 
 var loadMap = function () {
     collisionBoxes.add(500, 500, 200, 200, "rect");
+    collisionBoxes.add(100, 100, 50, 50, "circ");
     goblins.add(300, 300, 75, "assasin", 20);
 };
 loadMap();
@@ -1872,31 +1935,36 @@ draw = function () {
                         player.update();
                         player.draw();
                         
-                        for (var i = 0; i < collisionBoxes.length; i++) {
-                            collisionBoxes[i].run();
-                        }
-                        
-                        for (var i = 0; i < spellCasts.length; i++) {
+                        for (var i = spellCasts.length - 1; i >= 0; i--) {
                             spellCasts[i].update();
                             spellCasts[i].draw();
                             if (!spellCasts[i].visible) {
                                 spellCasts.splice(i, 1);
                             }
+                            
+                            
                             for (var j = 0; j < goblins.length; j++) {
                                 if (spellCasts.length !== 0) {
-                                    if (rectCircCol(spellCasts[i].x - spellCasts[i].w / 2, spellCasts[i].y - spellCasts[i].h * 2 / 3, spellCasts[i].w, spellCasts[i].h, goblins[j].x, goblins[j].y, goblins[j].s / 2)) {
+                                    if (circCircCol(spellCasts[i].x, spellCasts[i].y, spellCasts[i].w, goblins[j].x, goblins[j].y, goblins[j].s)) {
                                         goblins[j].damage(spellCasts[i].name);
                                         spellCasts.splice(i, 1);
                                     }
                                 }
                             }
+                            
                         }
                         
                         for (var i = 0; i < goblins.length; i++) {
                             goblins[i].update();
                             goblins[i].draw();
                         }
+                        
+                        for (var i = 0; i < collisionBoxes.length; i++) {
+                            collisionBoxes[i].run();
+                        }
                     popMatrix();
+                    
+                    spellSheet.draw();
                 } break;
             }
         }
