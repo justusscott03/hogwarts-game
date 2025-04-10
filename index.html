@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Khanwarts Legacy</title>
+        <style>
+
+            * {
+                margin: 0px;
+                padding: 0px;
+                overflow: hidden;
+            }
+
+            input:hover {
+                cursor: none;
+            }
+
+        </style>
+    </head>
+    <body onkeydown="keyPressed(event)" onkeyup="keyReleased(event); keyTyped(event)" onmousemove="mouseMove(event)" onclick="mouseClicked(event)">
+
+        <!-- Canvas element -->
+        <canvas id="canvas"></canvas>
+
+        <!-- Set up the canvas -->
+        <script>
+
+            let canvas = document.getElementById("canvas");
+            let ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            let width = 600;
+            let height = 600;
+
+        </script>
+
+        <!-- Some variables -->
+        <script>
+
+            let curEllipseMode = "CENTER";
+            let curRectMode = "CORNER";
+            let requiresFirstVertex = true;
+            let angleMode = "degrees";
+            let globalFont = "serif";
+            let globalSize = 10;
+
+        </script>
+
+        <script src="shapes.js"></script>
+        <script src="complexShapes.js"></script>
+        <script src="colors.js"></script>
+        <script src="text.js"></script>
+        <script src="transformation.js"></script>
+        <script src="math.js"></script>
+        <script src="trigonometry.js"></script>
+        <script src="other.js"></script>
+        <script src="Base64AudioPlayer.js"></script>
+        <script src="main.js"></script>
+
+    </body>
+</html>

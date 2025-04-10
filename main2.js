@@ -1,17 +1,6 @@
-// Initialization
-{
-            
-//console.clear();
-rectMode("CORNER");
-ellipseMode("CENTER");
-textFont("sans-serif");
-textSize(15);
-
-}
-
 /**
 
-Credit to SP(@Prodigy6) for the outlined text from their project, The Temple of Itzomar: https://www.khanacademy.org/computer-programming/the-temple-of-itzomar/6253229457391616
+Credit to SP(@Prodigy6) for the outlined text and camera from their project, The Temple of Itzomar: https://www.khanacademy.org/computer-programming/the-temple-of-itzomar/6253229457391616
 
 Credit to Vicioustrex(@Vicioustrex) for the circle-to-circle and circle-to-rect collisions from their project, Airsoft Battle: https://www.khanacademy.org/computer-programming/airsoft-battle/6722101637464064
 
@@ -134,26 +123,6 @@ var spells = {
 
 //}
 
-// Canvas reset function {
-
-function resetCanvas(canvas, ctx) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalAlpha = 1.0;
-    ctx.globalCompositeOperation = "source-over";
-    ctx.lineWidth = 1.0;
-    ctx.lineCap = "butt";
-    ctx.lineJoin = "miter";
-    ctx.miterLimit = 10;
-    ctx.strokeStyle = "#000000";
-    ctx.fillStyle = "#000000";
-    ctx.font = "10px sans-serif";
-    ctx.textAlign = "start";
-    ctx.textBaseline = "alphabetic";
-}
-
-//}
-
 //]
 
 /** Outlined text, credit to SP(@Prodigy6) **/
@@ -173,30 +142,16 @@ var outlinedText = function (t, x, y, f, s, w) {
 /** User interaction **/
 // [
 
+var keys = [];
+keyPressed = function () {
+    keys[keyCode] = true;
+};
+keyReleased = function () {
+    keys[keyCode] = false;
+};
+
 var typed = false;
 var clicked = false;
-
-var keys = [];
-var keyPressed = function (event) {
-    keys[event.keyCode] = true;
-};
-var keyReleased = function (event) {
-    keys[event.keyCode] = false;
-};
-
-var keyTyped = function (event) {
-    typed = true;
-};
-
-var mouseX, mouseY;
-var mouseMove = function (event) {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
-};
-
-var mouseClicked = function (event) {
-    clicked = true;
-};
 
 //]
 
@@ -405,11 +360,11 @@ var gamepad = new Gamepad();
 
 var images = {
     cursorRings : function () {
-
+        
         background(0, 0, 0, 0);
         
         noFill();
-        
+
         for (var i = 0; i < 5; i++) {
             strokeWeight(i);
             stroke(255, 245, 110, 255 - i * 50);
@@ -440,43 +395,28 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        var msk = createGraphics(width, height, P2D);
         
-        // msk.background(0, 0, 0, 0);
+        msk.background(0, 0, 0, 0);
         
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
         
-        // msk = msk.get();
+        msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        var bkg = createGraphics(width, height, P2D);
         
-        // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
         
-        // bkg = bkg.get();
+        bkg = bkg.get();
         
-        // bkg.mask(msk);
+        bkg.mask(msk);
         
-        // image(bkg, 0, 0);
-
-        ctx.save();
-
-            ctx.beginPath();
-            quad(50, 0, 100, 50, 50, 100, 0, 50);
-            ctx.clip();
-
-            noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
-                fill(lerpC);
-                rect(0, i, 100, 1);
-            }
-
-        ctx.restore();
+        image(bkg, 0, 0);
         
         noFill();
         strokeWeight(4);
@@ -493,43 +433,28 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        var msk = createGraphics(width, height, P2D);
         
-        // msk.background(0, 0, 0, 0);
+        msk.background(0, 0, 0, 0);
         
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
         
-        // msk = msk.get();
+        msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        var bkg = createGraphics(width, height, P2D);
         
-        // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
         
-        // bkg = bkg.get();
+        bkg = bkg.get();
         
-        // bkg.mask(msk);
+        bkg.mask(msk);
         
-        // image(bkg, 0, 0);
-
-        ctx.save();
-
-            ctx.beginPath();
-            quad(50, 0, 100, 50, 50, 100, 0, 50);
-            ctx.clip();
-
-            noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
-                fill(lerpC);
-                rect(0, i, 100, 1);
-            }
-
-        ctx.restore();
+        image(bkg, 0, 0);
         
         noFill();
         strokeWeight(4);
@@ -546,43 +471,28 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        var msk = createGraphics(width, height, P2D);
         
-        // msk.background(0, 0, 0, 0);
+        msk.background(0, 0, 0, 0);
         
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
         
-        // msk = msk.get();
+        msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        var bkg = createGraphics(width, height, P2D);
         
-        // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
         
-        // bkg = bkg.get();
+        bkg = bkg.get();
         
-        // bkg.mask(msk);
+        bkg.mask(msk);
         
-        // image(bkg, 0, 0);
-
-        ctx.save();
-
-            ctx.beginPath();
-            quad(50, 0, 100, 50, 50, 100, 0, 50);
-            ctx.clip();
-
-            noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
-                fill(lerpC);
-                rect(0, i, 100, 1);
-            }
-
-        ctx.restore();
+        image(bkg, 0, 0);
         
         noFill();
         strokeWeight(4);
@@ -599,43 +509,28 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        var msk = createGraphics(width, height, P2D);
         
-        // msk.background(0, 0, 0, 0);
+        msk.background(0, 0, 0, 0);
         
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
+        msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
         
-        // msk = msk.get();
+        msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        var bkg = createGraphics(width, height, P2D);
         
-        // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
+        bkg.noStroke();
+        for (var i = 0; i < 100; i++) {
+            var lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
+            bkg.fill(lerpC);
+            bkg.rect(0, i, 100, 1);
+        }
         
-        // bkg = bkg.get();
+        bkg = bkg.get();
         
-        // bkg.mask(msk);
+        bkg.mask(msk);
         
-        // image(bkg, 0, 0);
-
-        ctx.save();
-
-            ctx.beginPath();
-            quad(50, 0, 100, 50, 50, 100, 0, 50);
-            ctx.clip();
-
-            noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
-                fill(lerpC);
-                rect(0, i, 100, 1);
-            }
-
-        ctx.restore();
+        image(bkg, 0, 0);
         
         noFill();
         strokeWeight(4);
@@ -656,8 +551,8 @@ var images = {
         for (var x = 0; x < 100; x++) {
             var yOff = 0;
             for (var y = 0; y < 100; y++) {
-                var bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
-                fill(bright);
+                var bright = map(noise(xOff, yOff), 0, 1, 0, 255);
+                stroke(bright);
                 point(x, y);
                 yOff += 0.02;
             }
@@ -696,8 +591,8 @@ var images = {
         for (var x = 0; x < 300; x++) {
             var yOff = 0;
             for (var y = 0; y < 40; y++) {
-                var bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
-                fill(bright);
+                var bright = map(noise(xOff, yOff), 0, 1, 0, 255);
+                stroke(bright);
                 point(x, y);
                 yOff += 0.02;
             }
@@ -732,19 +627,19 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        let xOff = 0;
-        for (let x = 0; x < 300; x++) {
-            let yOff = 0;
-            for (let y = 0; y < 300; y++) {
-                let bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
-                fill(bright);
+        var xOff = 0;
+        for (var x = 0; x < 250; x++) {
+            var yOff = 0;
+            for (var y = 0; y < 250; y++) {
+                var bright = map(noise(xOff, yOff), 0, 1, 0, 255);
+                stroke(bright);
                 point(x, y);
                 yOff += 0.02;
             }
             xOff += 0.02;
         }
         
-        return get(0, 0, 300, 300);
+        return get(0, 0, 250, 250);
         
     },
     leftArrow : function () {
@@ -796,8 +691,6 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        noStroke();
-
         fill(255);
         ellipse(25, 25, 30, 30);
         
@@ -814,10 +707,10 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        noStroke();
+        noStroke(); 
         
         fill(50);
-        arc(32, 43, 20, 50, 270, 361);
+        arc(32, 43, 20, 50, -90, 1);
         arc(25, 20, 20, 30, 180, 360);
         
         fill(25);
@@ -861,7 +754,7 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        strokeCap("ROUND");
+        strokeCap(ROUND);
         stroke(133, 96, 41);
         strokeWeight(4);
         line(25, 7, 25, 43);
@@ -874,7 +767,7 @@ var images = {
         background(0, 0, 0, 0);
         
         noFill();
-        strokeCap("ROUND");
+        strokeCap(ROUND);
         stroke(87, 55, 11);
         strokeWeight(4);
         beginShape();
@@ -893,7 +786,7 @@ var images = {
         background(0, 0, 0, 0);
         
         noFill();
-        strokeCap("ROUND");
+        strokeCap(ROUND);
         stroke(217, 203, 185);
         strokeWeight(4);
         line(25, 7, 25, 43);
@@ -901,9 +794,9 @@ var images = {
             var lerpC = lerpColor(color(163, 136, 57), color(0), i / 12);
             
             stroke(lerpC);
-            strokeCap("SQUARE");
+            strokeCap(SQUARE);
             strokeWeight(1);
-            line(23, i + 30, 27, i + 30);
+            line(23, i + 30, 26, i + 30);
         }
         
         return get(0, 0, 50, 50);
@@ -920,8 +813,6 @@ var curLoad = 0;
 var loaded = false;
 var load = function () {
     var obj = Object.keys(images);
-
-    resetCanvas(canvas, ctx);
     
     images[obj[curLoad]] = images[obj[curLoad]]();
     
@@ -938,43 +829,48 @@ var load = function () {
 /** Fancy cursor **/
 // [
 
-class Cursor {
+var Cursor = (function () {
 
-    constructor (x, y) {
+    var _Cursor = function (x, y) {
         this.x = x;
         this.y = y;
         this.arc = 0;
         this.size = 50;
-    }
+    };
+    
+    _Cursor.prototype = {
         
-    update () {
-        if (!gamepad.isConnected()) {
-            this.x = mouseX;
-            this.y = mouseY;
-        }
-        else {
-            var leftStick = gamepad.stickPos("left");
+        update : function () {
+            if (!gamepad.isConnected()) {
+                this.x = mouseX;
+                this.y = mouseY;
+            }
+            else {
+                var leftStick = gamepad.stickPos("left");
+                
+                this.x += leftStick.x * 5;
+                this.y += leftStick.y * 5;
+            }
+        },
+        
+        draw : function () {
+            image(images.cursorRings, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
             
-            this.x += leftStick.x * 5;
-            this.y += leftStick.y * 5;
+            this.arc++;
+            pushMatrix();
+                translate(this.x, this.y);
+                rotate(this.arc);
+                image(images.cursorArcs, -this.size / 2, -this.size / 2, this.size, this.size);
+            popMatrix();
         }
-    }
         
-    draw () {
-        ctx.globalAlpha = 1;
+    };
+    
+    return _Cursor;
 
-        image(images.cursorRings, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
-        
-        this.arc++;
-        pushMatrix();
-            translate(this.x, this.y);
-            rotate(this.arc);
-            image(images.cursorArcs, -this.size / 2, -this.size / 2, this.size, this.size);
-        popMatrix();
-    }
+}) ();
 
-}
-
+// Intentional mispelling because of Oh Noes error
 var cursro = new Cursor(300, 300);
 
 //]
@@ -982,45 +878,50 @@ var cursro = new Cursor(300, 300);
 /** Scene transition **/
 // [
 
-class SceneChange {
+var SceneChange = (function () {
 
-    constructor () {
+    var _SceneChange = function () {
         this.nextScene = "menu";
         this.mode = "out";
         this.opac = 255;
         this.changeSpeed = 10;
-    }
+    };
+    
+    _SceneChange.prototype = {
         
-    draw () {
-        noStroke();
-        fill(0, 0, 0, this.opac);
-        rect(0, 0, 600, 600);
-    }
-    
-    reset (nextScene) {
-        if (this.mode === "out") {
-            this.opac = 0;
-            this.mode = "in";
-            this.nextScene = nextScene;
-        }
-    }
-    
-    pack () {
-        if (this.mode === "in") {
-            this.opac += this.changeSpeed;
-            if (this.opac >= 255) {
-                this.mode = "out";
-                scene = this.nextScene;
+        draw : function () {
+            noStroke();
+            fill(0, 0, 0, this.opac);
+            rect(0, 0, 600, 600);
+        },
+        
+        reset : function (nextScene) {
+            if (this.mode === "out") {
+                this.opac = 0;
+                this.mode = "in";
+                this.nextScene = nextScene;
             }
+        },
+        
+        pack : function () {
+            if (this.mode === "in") {
+                this.opac += this.changeSpeed;
+                if (this.opac >= 255) {
+                    this.mode = "out";
+                    scene = this.nextScene;
+                }
+            }
+            else {
+                this.opac -= this.changeSpeed;
+            }
+            this.draw();
         }
-        else {
-            this.opac -= this.changeSpeed;
-        }
-        this.draw();
-        this.opac = constrain(this.opac, 0, 255);
-    }
+        
+    };
+    
+    return _SceneChange;
 
-}
+}) ();
 
 var sceneChange = new SceneChange();
 
@@ -1029,9 +930,9 @@ var sceneChange = new SceneChange();
 /** Spell cast **/
 // [
 
-class SpellCast {
+var SpellCast = (function () {
     
-    constructor (x, y, w, h, r, name, maxSpeed) {
+    var _SpellCast = function (x, y, w, h, r, name, maxSpeed) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -1048,32 +949,38 @@ class SpellCast {
         
         this.reloading = false;
         this.reloadTime = 0;
-    }
-        
-    update () {
-        this.flyTime++;
-        
-        if (this.flyTime > 150) {
-            this.visible = false;
-        }
-        
-        this.velx = sin(this.r + 180) * this.maxSpeed;
-        this.vely = -cos(this.r + 180) * this.maxSpeed;
-        
-        this.x += this.velx;
-        this.y += this.vely;
-    }
+    };
     
-    draw () {
-        pushMatrix();
-            translate(this.x, this.y);
-            rotate(this.r);
-            translate(-this.x, -this.y);
-            image(images[this.name], this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
-        popMatrix();
-    }
+    _SpellCast.prototype = {
+        
+        update : function () {
+            this.flyTime++;
+            
+            if (this.flyTime > 150) {
+                this.visible = false;
+            }
+            
+            this.velx = sin(this.r + 180) * this.maxSpeed;
+            this.vely = -cos(this.r + 180) * this.maxSpeed;
+            
+            this.x += this.velx;
+            this.y += this.vely;
+        },
+        
+        draw : function () {
+            pushMatrix();
+                translate(this.x, this.y);
+                rotate(this.r);
+                translate(-this.x, -this.y);
+                image(images[this.name], this.x - this.w / 2, this.y - this.h * 2 / 3, this.w, this.h);
+            popMatrix();
+        },
+        
+    };
     
-}
+    return _SpellCast;
+    
+}) ();
 
 var spellCasts = [];
 
@@ -1082,9 +989,9 @@ var spellCasts = [];
 /** Spell diamonds for casting **/
 // [
 
-class Spell {
+var Spell = (function () {
 
-    constructor (x, y, w, h, t, n) {
+    var _Spell = function (x, y, w, h, t, n) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -1096,65 +1003,71 @@ class Spell {
         this.maxReload = 0;
         this.reloading = false;
         this.grayOpac = 0;
-    }
-        
-    use () {
-        this.s = 0.9;
-        this.reloading = true;
-    }
-
-    update () {
-        if (this.type === "control") {
-            this.maxReload = 200;
-        }
-        if (this.type === "force") {
-            this.maxReload = 500;
-        }
-        if (this.type === "power") {
-            this.maxReload = 800;
-        }
-        if (this.type === "forbidden") {
-            this.maxReload = 1500;
-        }
-        
-        this.s = lerp(this.s, 1, 0.1);
-        
-        if (this.reloading) {
-            this.grayOpac = lerp(this.grayOpac, 200, 0.05);
-            this.reload++;
-            if (this.reload > this.maxReload) {
-                this.reloading = false;
-                this.reload = 0;
-            }
-        }
-        else {
-            this.grayOpac = lerp(this.grayOpac, 0, 0.05);
-        }
-    }
+    };
     
-    draw () {
-        pushMatrix();
-            translate(this.x + this.w / 2, this.y + this.h / 2);
-            scale(this.s);
-            translate(-(this.x + this.w / 2), -(this.y + this.h / 2));
-            image(images[this.type], this.x, this.y, this.w, this.h);
-            //image(images[this.name], this.x, this.y, this.w, this.h);
+    _Spell.prototype = {
+        
+        use : function () {
+            this.s = 0.9;
+            this.reloading = true;
+        },
+    
+        update : function () {
+            if (this.type === "control") {
+                this.maxReload = 200;
+            }
+            if (this.type === "force") {
+                this.maxReload = 500;
+            }
+            if (this.type === "power") {
+                this.maxReload = 800;
+            }
+            if (this.type === "forbidden") {
+                this.maxReload = 1500;
+            }
             
-            noStroke();
-            fill(1, 1, 1, this.grayOpac);
-            quad(this.x + this.w / 2, this.y, this.x + this.w, this.y + this.h / 2, this.x + this.w / 2, this.y + this.h, this.x, this.y + this.h / 2);
+            this.s = lerp(this.s, 1, 0.1);
             
-            var reload = map(this.reload, 0, this.maxReload, -90, 270);
-            
-            strokeCap(SQUARE);
-            strokeWeight(5);
-            stroke(150, 150, 150, this.grayOpac);
-            noFill();
-            arc(this.x + this.w / 2, this.y + this.h / 2, this.w / 1.8, this.h / 1.8, -90, reload);
-        popMatrix();
-    }
+            if (this.reloading) {
+                this.grayOpac = lerp(this.grayOpac, 200, 0.05);
+                this.reload++;
+                if (this.reload > this.maxReload) {
+                    this.reloading = false;
+                    this.reload = 0;
+                }
+            }
+            else {
+                this.grayOpac = lerp(this.grayOpac, 0, 0.05);
+            }
+        },
+        
+        draw : function () {
+            pushMatrix();
+                translate(this.x + this.w / 2, this.y + this.h / 2);
+                scale(this.s);
+                translate(-(this.x + this.w / 2), -(this.y + this.h / 2));
+                image(images[this.type], this.x, this.y, this.w, this.h);
+                //image(images[this.name], this.x, this.y, this.w, this.h);
+                
+                noStroke();
+                fill(1, 1, 1, this.grayOpac);
+                quad(this.x + this.w / 2, this.y, this.x + this.w, this.y + this.h / 2, this.x + this.w / 2, this.y + this.h, this.x, this.y + this.h / 2);
+                
+                var reload = map(this.reload, 0, this.maxReload, -90, 270);
+                
+                strokeCap(SQUARE);
+                strokeWeight(5);
+                stroke(150, 150, 150, this.grayOpac);
+                noFill();
+                arc(this.x + this.w / 2, this.y + this.h / 2, this.w / 1.8, this.h / 1.8, -90, reload);
+            popMatrix();
+        }
+    
+    };
+    
+    return _Spell;
 
-}
+}) ();
 
 var spell1 = new Spell(530, 490, 60, 60, "power");
 var spell2 = new Spell(490, 530, 60, 60, "forbidden");
@@ -1166,40 +1079,48 @@ var spell4 = new Spell(490, 450, 60, 60, "control");
 /** Sheet of four spells **/
 // [
 
-class SpellSheet {
+var SpellSheet = (function () {
 
-    constructor (spell1, spell2, spell3, spell4) {
+    var _SpellSheet = function (spell1, spell2, spell3, spell4) {
         this.spell1 = spell1;
         this.spell2 = spell2;
         this.spell3 = spell3;
         this.spell4 = spell4;
         
         this.spells = [spell1, spell2, spell3, spell4];
-    }
+    };
+    
+    _SpellSheet.prototype = {
         
-    draw () {
-        for (var i = 0; i < this.spells.length; i++) {
-            this.spells[i].update();
-            this.spells[i].draw();
-            
-            if (typed && key.code === i + 49) {
-                this.spells[i].use();
+        draw : function () {
+            for (var i = 0; i < this.spells.length; i++) {
+                this.spells[i].update();
+                this.spells[i].draw();
+                
+                if (typed && key.code === i + 49) {
+                    this.spells[i].use();
+                }
             }
         }
-    }
+        
+    };
+    
+    return _SpellSheet;
 
-}
+}) ();
 
 var spellSheet = new SpellSheet(spell1, spell2, spell3, spell4);
+
+
 
 //]
 
 /** Player **/
 // [
 
-class Player {
+var Player = (function () {
     
-    constructor (x, y, s) {
+    var _Player = function (x, y, s) {
         this.x = x;
         this.y = y;
         this.s = s;
@@ -1230,146 +1151,170 @@ class Player {
         this.curState = false;
         this.prevState = false;
     };
+    
+    _Player.prototype = {
         
-    update () {
-        if (!this.dead) {
-            if (keys[65] || keys[37]) {
-                this.velx--;
-            }
-            if (keys[68] || keys[39]) {
-                this.velx++;
-            }
-            if (keys[87] || keys[38]) {
-                this.vely--;
-            }
-            if (keys[83] || keys[40]) {
-                this.vely++;
-            }
-            
-            if (!keys[65] && !keys[37] && !keys[68] && !keys[39]) {
-                if (this.velx > 0) {
+        update : function () {
+            if (!this.dead) {
+                if (keys[65] || keys[37]) {
                     this.velx--;
                 }
-                if (this.velx < 0) {
+                if (keys[68] || keys[39]) {
                     this.velx++;
                 }
-            }
-            
-            if (!keys[83] && !keys[40] && !keys[87] && !keys[38]) {
-                if (this.vely > 0) {
+                if (keys[87] || keys[38]) {
                     this.vely--;
                 }
-                if (this.vely < 0) {
+                if (keys[83] || keys[40]) {
                     this.vely++;
                 }
-            }
-            
-            this.velx = constrain(this.velx, -this.maxSpeed, this.maxSpeed);
-            this.vely = constrain(this.vely, -this.maxSpeed, this.maxSpeed);
-            
-            this.x += this.velx;
-            this.y += this.vely;
-            
-            if (this.reloading) {
-                this.castReload++;
-                if (this.castReload > this.selectedSpell.reload) {
-                    this.castReload = 0;
-                    this.reloading = false;
+                
+                if (!keys[65] && !keys[37] && !keys[68] && !keys[39]) {
+                    if (this.velx > 0) {
+                        this.velx--;
+                    }
+                    if (this.velx < 0) {
+                        this.velx++;
+                    }
                 }
-            }
-            
-            if (!this.reloading) {
-                if (clicked && !gamepad.isConnected()) {
-                    spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
-                    this.reloading = true;
+                
+                if (!keys[83] && !keys[40] && !keys[87] && !keys[38]) {
+                    if (this.vely > 0) {
+                        this.vely--;
+                    }
+                    if (this.vely < 0) {
+                        this.vely++;
+                    }
                 }
-                else if (gamepad.isConnected()) {
-                    this.curState = gamepad.isPressed("right trigger");
-                    
-                    if (!this.curState && this.prevState) {
+                
+                this.velx = constrain(this.velx, -this.maxSpeed, this.maxSpeed);
+                this.vely = constrain(this.vely, -this.maxSpeed, this.maxSpeed);
+                
+                this.x += this.velx;
+                this.y += this.vely;
+                
+                if (this.reloading) {
+                    this.castReload++;
+                    if (this.castReload > this.selectedSpell.reload) {
+                        this.castReload = 0;
+                        this.reloading = false;
+                    }
+                }
+                
+                if (!this.reloading) {
+                    if (clicked && !gamepad.isConnected()) {
                         spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
                         this.reloading = true;
                     }
-                    
-                    this.prevState = this.curState;
+                    else if (gamepad.isConnected()) {
+                        this.curState = gamepad.isPressed("right trigger");
+                        
+                        if (!this.curState && this.prevState) {
+                            spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
+                            this.reloading = true;
+                        }
+                        
+                        this.prevState = this.curState;
+                    }
                 }
             }
-        }
-    }
-    
-    draw () {
+        },
         
-        this.eyeColor = eyeColors[eyeColorIndex];
-        this.skinTone = skinTones[skinToneIndex];
-        this.cloakColor = cloakColors[cloakColorIndex];
-        
-        noStroke();
-        
-        pushMatrix();
-            translate(this.x, this.y);
-            rotate(this.r);
-            scale(this.scale);
+        draw : function () {
             
-            // Wand
-            pushMatrix();
-                rotate(180);
-                if (images["wand" + this.wand] !== undefined) {
-                    image(images["wand" + this.wand], this.s / 8, -this.s / 0.9, this.s / 1.5, this.s / 1.5);
-                }
-            popMatrix();
+            this.eyeColor = eyeColors[eyeColorIndex];
+            this.skinTone = skinTones[skinToneIndex];
+            this.cloakColor = cloakColors[cloakColorIndex];
             
             noStroke();
-
-            ctx.globalAlpha = 1;
-
-            // Body
-            fill(this.skinTone);
-            ellipse(0, 0, this.s, this.s);
-            ellipse(-this.s / 2.25, this.s / 2.25, this.s / 3.25, this.s / 3.25);
-            ellipse(this.s / 2.25, this.s / 2.25, this.s / 3.25, this.s / 3.25);
-            fill(255, 255, 255, 30);
-            ellipse(-this.s / 50, -this.s / 50, this.s / 1.15, this.s / 1.15);
-            ellipse(-this.s / 2.205, this.s / 2.295, this.s / 3.7375, this.s / 3.7375);
-            ellipse(this.s / 2.295, this.s / 2.295, this.s / 3.7375, this.s / 3.7375);
             
-            // Eyes
-            fill(255);
-            ellipse(-this.s / 5, this.s / 5, this.s / 5, this.s * 4 / 15);
-            ellipse(this.s / 5, this.s / 5, this.s / 5, this.s * 4 / 15);
+            pushMatrix();
+                translate(this.x, this.y);
+                rotate(this.r);
+                scale(this.scale);
+                
+                // Wand
+                pushMatrix();
+                    rotate(180);
+                    if (images["wand" + this.wand] !== undefined) {
+                        image(images["wand" + this.wand], this.s / 8, -this.s / 0.9, this.s / 1.5, this.s / 1.5);
+                    }
+                popMatrix();
+                
+                // Body
+                fill(this.skinTone);
+                ellipse(0, 0, this.s, this.s);
+                ellipse(-this.s / 2.25, this.s / 2.25, this.s / 3.25, this.s / 3.25);
+                ellipse(this.s / 2.25, this.s / 2.25, this.s / 3.25, this.s / 3.25);
+                fill(255, 255, 255, 30);
+                ellipse(-this.s / 50, -this.s / 50, this.s / 1.15, this.s / 1.15);
+                ellipse(-this.s / 2.205, this.s / 2.295, this.s / 3.7375, this.s / 3.7375);
+                ellipse(this.s / 2.295, this.s / 2.295, this.s / 3.7375, this.s / 3.7375);
+                
+                // Eyes
+                fill(255);
+                ellipse(-this.s / 5, this.s / 5, this.s / 5, this.s * 4 / 15);
+                ellipse(this.s / 5, this.s / 5, this.s / 5, this.s * 4 / 15);
+                
+                fill(this.eyeColor);
+                arc(this.s / 5, this.s * 6 / 25, this.s * 29 / 150, this.s / 7, 180, 360);
+                arc(-this.s / 5, this.s * 6 / 25, this.s * 29 / 150, this.s / 7, 180, 360);
+                
+                fill(0);
+                arc(-this.s / 5, this.s * 7 / 30, this.s * 29 / 150, this.s / 5, 0, 180);
+                arc(-this.s / 5, this.s * 6 / 25, this.s * 14 / 75, this.s / 10, 180, 360);
+                
+                arc(this.s / 5, this.s * 7 / 30, this.s * 29 / 150, this.s / 5, 0, 180);
+                arc(this.s / 5, this.s * 6 / 25, this.s * 14 / 75, this.s / 10, 180, 360);
+                
+                // Cloak
+                fill(this.cloakColor);
+                beginShape();
+                    curveVertex(-this.s / 10.2, this.s / 2.1);
+                    curveVertex(-this.s / 1.9, this.s / 30);
+                    curveVertex(-this.s / 2.6, -this.s / 2.7);
+                    curveVertex(-this.s / 4.6, -this.s / 1.7);
+                    curveVertex(-this.s / 12.5, -this.s / 1.2);
+                    curveVertex(this.s / 4, -this.s / 1.97);
+                    curveVertex(this.s / 2, -this.s / 6.9);
+                    curveVertex(this.s / 2, this.s / 5.7);
+                    curveVertex(this.s / 3.4, this.s / 22.6);
+                    curveVertex(this.s / 18.5, this.s / 11.5);
+                    curveVertex(-this.s / 3.9, this.s / 25.8);
+                    curveVertex(-this.s / 2.4, this.s / 9.0);
+                    curveVertex(-this.s / 2.1, this.s / 5.0);
+                    curveVertex(-this.s / 2.5, this.s / 8.2);
+                endShape();
+                
+                fill(0, 0, 0, 30);
+                beginShape();
+                    curveVertex(-this.s / 4.6, -this.s / 1.7);
+                    curveVertex(-this.s / 12.5, -this.s / 1.2);
+                    curveVertex(this.s / 4, -this.s / 1.97);
+                    curveVertex(this.s / 2, -this.s / 6.9);
+                    curveVertex(this.s / 2, this.s / 5.7);
+                    curveVertex(this.s / 3.4, this.s / 22.6);
+                    curveVertex(this.s / 18.5, this.s / 13.7);
+                    curveVertex(-this.s / 132, -this.s / 9.2);
+                    curveVertex(-this.s / 14, -this.s / 2.4);
+                    curveVertex(-this.s / 28.5, -this.s / 1.5);
+                    curveVertex(-this.s / 6.7, this.s / 13.3);
+                endShape();
+            popMatrix();
             
-            fill(this.eyeColor);
-            arc(this.s / 5, this.s * 6 / 25, this.s * 29 / 150, this.s / 7, 180, 360);
-            arc(-this.s / 5, this.s * 6 / 25, this.s * 29 / 150, this.s / 7, 180, 360);
-            
-            fill(0);
-            arc(-this.s / 5, this.s * 7 / 30, this.s * 29 / 150, this.s / 5, 0, 180);
-            arc(-this.s / 5, this.s * 6 / 25, this.s * 14 / 75, this.s / 10, 180, 360);
-            
-            arc(this.s / 5, this.s * 7 / 30, this.s * 29 / 150, this.s / 5, 0, 180);
-            arc(this.s / 5, this.s * 6 / 25, this.s * 14 / 75, this.s / 10, 180, 360);
-
-            // Cloak
-            fill(this.cloakColor);
-            beginShape();
-                vertex(-this.s / 2.1, this.s / 4.7);
-                bezierVertex(-this.s / 1.7, this.s / 21, -this.s / 2.1, -this.s / 2.7, -this.s / 7.0, -this.s / 1.5);
-                bezierVertex(-this.s / 23.3, -this.s / 2.1, this.s / 2.2, -this.s / 2.08, this.s / 2, -this.s / 6.9);
-                bezierVertex(this.s / 1.6, this.s / 4.1, this.s / 3.9, -this.s / 7.3, -this.s / 19.9, this.s / 36.3);
-                bezierVertex(-this.s / 5.1, this.s / 20.6, -this.s / 2.6, -this.s / 14.8, -this.s / 2.1, this.s / 4.7);
-            endShape();
-            
-            fill(0, 0, 0, 30);
-            beginShape();
-                vertex(-this.s / 19.9, this.s / 36.3);
-                bezierVertex(-this.s / 7.0, -this.s / 1.5, this.s / 13.1, -this.s / 5.5, -this.s / 7.0, -this.s / 1.5);
-                bezierVertex(-this.s / 23.3, -this.s / 2.1, this.s / 2.2, -this.s / 2.08, this.s / 2, -this.s / 6.9);
-                bezierVertex(this.s / 1.6, this.s / 4.1, this.s / 3.9, -this.s / 7.3, -this.s / 19.9, this.s / 36.3);
-            endShape();
-        popMatrix();
+        },
         
-    }
+        displayName : function (name) {
+            var array = name;
+            var string = array.join();
+            return string.replaceAll(",", "");
+        }
+        
+    };
     
-}
+    return _Player;
+    
+}) ();
 
 var player = new Player(300, 300, 75);
 
@@ -1378,9 +1323,9 @@ var player = new Player(300, 300, 75);
 /** Goblin **/
 // [
 
-class Goblin {
+var Goblin = (function () {
 
-    constructor (x, y, s, type, level) {
+    var _Goblin = function (x, y, s, type, level) {
         this.x = x;
         this.y = y;
         this.s = s;
@@ -1395,46 +1340,53 @@ class Goblin {
         this.level = level;
         
         this.health = (this.data.health * this.level) - ((this.level - 1) * 25);
-    }
-        
-    update () {
-        
-        if (!this.dead) {
-            this.r = atan2(player.y - this.y, player.x - this.x) - 90;
-        }
-        
-        if (dist(this.x, this.y, player.x, player.y) < 1000) {
-            this.rendered = true;
-        }
-        else {
-            this.rendered = false;
-        }
-        
-    }
+    };
     
-    draw () {
+    _Goblin.prototype = {
         
-        if (this.rendered) {
-            pushMatrix();
-                translate(this.x, this.y);
-                rotate(this.r);
-                scale(this.scale);
-                noStroke();
-                fill(0);
-                ellipse(0, 0, this.s, this.s);
-                
-                fill(255);
-                ellipse(0, this.s / 4, this.s / 8, this.s / 8);
-            popMatrix();
+        update : function () {
+            
+            if (!this.dead) {
+                this.r = atan2(player.y - this.y, player.x - this.x) - 90;
+            }
+            
+            if (dist(this.x, this.y, player.x, player.y) < 1000) {
+                this.rendered = true;
+            }
+            else {
+                this.rendered = false;
+            }
+            
+        },
+        
+        draw : function () {
+            
+            if (this.rendered) {
+                pushMatrix();
+                    translate(this.x, this.y);
+                    rotate(this.r);
+                    scale(this.scale);
+                    noStroke();
+                    fill(0);
+                    ellipse(0, 0, this.s, this.s);
+                    
+                    fill(255);
+                    ellipse(0, this.s / 4, this.s / 8, this.s / 8);
+                popMatrix();
+            }
+            
+        },
+        
+        damage : function (spell) {
+            this.health -= spells[spell].damage;
         }
         
-    }
-    
-    damage (spell) {
-        this.health -= spells[spell].damage;
-    }
+    };
 
-}
+    return _Goblin;
+
+}) ();
+
 var goblins = [];
 goblins.add = function (x, y, s, type, level) {
     this.push(new Goblin(x, y, s, type, level));
@@ -1445,96 +1397,102 @@ goblins.add = function (x, y, s, type, level) {
 /** Collision box **/
 // [
 
-class CollisionBox {
+var CollisionBox = (function () {
 
-    constructor (x, y, w, h, type) {
+    var _CollisionBox = function (x, y, w, h, type) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
         this.type = type;
-    }
+    };
+
+    _CollisionBox.prototype = {
         
-    run () {
-        fill(0);
-        if (this.type === "rect") {
-            rect(this.x, this.y, this.w, this.h);
-        }
-        else if (this.type === "circ") {
-            ellipse(this.x, this.y, this.w, this.h);
-        }
-        
-        if (dist(player.x, player.y, this.x, this.y) < 600) {
-            if (this.type === "circ") {
-                if (circCircCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
-                    var angle = atan2(player.x - this.x, player.y - this.y);
-                    
-                    player.x = this.x - cos(angle + 90) * (this.w / 2 + player.s / 2);
-                    player.y = this.y + sin(angle + 90) * (this.w / 2 + player.s / 2);
-                }
-            }
-            
+        run : function () {
+            fill(0);
             if (this.type === "rect") {
-                if (rectCircCol(this.x, this.y, this.w, this.h, player.x, player.y, player.s / 2)) {
-                    if (player.x < this.x) {
-                        player.x -= player.maxSpeed;
-                    }
-                    if (player.y < this.y) {
-                        player.y -= player.maxSpeed;
-                    }
-                    if (player.x > this.x + this.w) {
-                        player.x += player.maxSpeed;
-                    }
-                    if (player.y > this.y + this.h) {
-                        player.y += player.maxSpeed;
-                    }
-                }
+                rect(this.x, this.y, this.w, this.h);
             }
-        }
-        
-        for (var i = 0; i < goblins.length; i++) {
-            var g = goblins[i];
+            else if (this.type === "circ") {
+                ellipse(this.x, this.y, this.w, this.h);
+            }
             
-            if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600) {
+            if (dist(player.x, player.y, this.x, this.y) < 600) {
                 if (this.type === "circ") {
-                    if (circCircCol(this.x, this.y, this.w, g.x, g.y, g.s)) {
-                        var angle = Math.atan2(g.x - this.x, g.y - this.y);
+                    if (circCircCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
+                        var angle = atan2(player.x - this.x, player.y - this.y);
                         
-                        g.x = this.x - cos(angle + 90) * (g.s / 2 + this.w / 2);
-                        g.y = this.y + sin(angle + 90) * (g.s / 2 + this.w / 2);
+                        player.x = this.x - cos(angle + 90) * (this.w / 2 + player.s / 2);
+                        player.y = this.y + sin(angle + 90) * (this.w / 2 + player.s / 2);
                     }
                 }
                 
                 if (this.type === "rect") {
-                    if (rectCircCol(this.x, this.y, this.w, this.h, g.x, g.y, g.s / 2)) {
-                        if (g.x < this.x) {
-                            g.x -= g.maxSpeed;
+                    if (rectCircCol(this.x, this.y, this.w, this.h, player.x, player.y, player.s / 2)) {
+                        if (player.x < this.x) {
+                            player.x -= player.maxSpeed;
                         }
-                        if (g.y < this.y) {
-                            g.y -= g.maxSpeed;
+                        if (player.y < this.y) {
+                            player.y -= player.maxSpeed;
                         }
-                        if (g.x > this.x + this.w) {
-                            g.x += g.maxSpeed;
+                        if (player.x > this.x + this.w) {
+                            player.x += player.maxSpeed;
                         }
-                        if (g.y > this.y + this.h) {
-                            g.y += g.maxSpeed;
+                        if (player.y > this.y + this.h) {
+                            player.y += player.maxSpeed;
                         }
+                    }
+                }
+            }
+            
+            for (var i = 0; i < goblins.length; i++) {
+                var g = goblins[i];
+                
+                if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600) {
+                    if (this.type === "circ") {
+                        if (circCircCol(this.x, this.y, this.w, g.x, g.y, g.s)) {
+                            var angle = Math.atan2(g.x - this.x, g.y - this.y);
+                            
+                            g.x = this.x - cos(angle + 90) * (g.s / 2 + this.w / 2);
+                            g.y = this.y + sin(angle + 90) * (g.s / 2 + this.w / 2);
+                        }
+                    }
+                    
+                    if (this.type === "rect") {
+                        if (rectCircCol(this.x, this.y, this.w, this.h, g.x, g.y, g.s / 2)) {
+                            if (g.x < this.x) {
+                                g.x -= g.maxSpeed;
+                            }
+                            if (g.y < this.y) {
+                                g.y -= g.maxSpeed;
+                            }
+                            if (g.x > this.x + this.w) {
+                                g.x += g.maxSpeed;
+                            }
+                            if (g.y > this.y + this.h) {
+                                g.y += g.maxSpeed;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            for (var i = spellCasts.length - 1; i >= 0; i--) {
+                var s = spellCasts[i];
+                if (dist(this.x, this.y, s.x, s.y) < 600) {
+                    if ((this.type === "circ" && circCircCol(s.x, s.y, s.w, this.x, this.y, this.w)) || (this.type === "rect" && rectCircCol(this.x, this.y, this.w, this.h, s.x, s.y, s.w / 2))) {
+                        spellCasts.splice(i, 1);
                     }
                 }
             }
         }
         
-        for (var i = spellCasts.length - 1; i >= 0; i--) {
-            var s = spellCasts[i];
-            if (dist(this.x, this.y, s.x, s.y) < 600) {
-                if ((this.type === "circ" && circCircCol(s.x, s.y, s.w, this.x, this.y, this.w)) || (this.type === "rect" && rectCircCol(this.x, this.y, this.w, this.h, s.x, s.y, s.w / 2))) {
-                    spellCasts.splice(i, 1);
-                }
-            }
-        }
-    }
+    };
+    
+    return _CollisionBox;
 
-}
+}) ();
 
 var collisionBoxes = [];
 collisionBoxes.add = function (x, y, w, h, type) {
@@ -1558,51 +1516,35 @@ loadMap();
 /** Text inputs **/
 // [
 
-class Input {
+var Input = (function () {
 
-    constructor (x, y, w, h, value = "", maxlength) {
+    var _Input = function (x, y, w, h) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
+        this.txt = [];
         this.blinkTimer = 0;
         this.selected = false;
         this.mouseOver = false;
         
         this.curState = false;
         this.prevState = false;
-
-        this.input = document.createElement("input");
-        this.input.style = `position: absolute; opacity: 0; pointer-events: all; left: ${this.x}px; top: ${this.y}px; width: ${this.w}px; height: ${this.h}px;`;
-        this.input.type = "text";
-        this.input.maxlength = maxlength;
-        this.input.value = value;
-
-        document.body.appendChild(this.input);
     };
+    
+    _Input.prototype = {
         
-    draw () {
-        this.mouseOver = cursro.x > this.x &&
-                            cursro.x < this.x + this.w &&
-                            cursro.y > this.y &&
-                            cursro.y < this.y + this.h;
-            
-        if (this.mouseOver) {
-            cursor("pointer");
-        }
-        
-        if (clicked && !gamepad.isConnected()) {
+        draw : function () {
+            this.mouseOver = cursro.x > this.x &&
+                             cursro.x < this.x + this.w &&
+                             cursro.y > this.y &&
+                             cursro.y < this.y + this.h;
+             
             if (this.mouseOver) {
-                this.selected = true;
+                cursor("pointer");
             }
-            else {
-                this.selected = false;
-            }
-        }
-        else if (gamepad.isConnected()) {
-            this.curState = gamepad.isPressed("a");
             
-            if (!this.curState && this.prevState) {
+            if (clicked && !gamepad.isConnected()) {
                 if (this.mouseOver) {
                     this.selected = true;
                 }
@@ -1610,53 +1552,80 @@ class Input {
                     this.selected = false;
                 }
             }
+            else if (gamepad.isConnected()) {
+                this.curState = gamepad.isPressed("a");
+                
+                if (!this.urState && this.prevState) {
+                    if (this.mouseOver) {
+                        this.selected = true;
+                    }
+                    else {
+                        this.selected = false;
+                    }
+                }
+                
+                this.prevState = this.curState;
+            }
             
-            this.prevState = this.curState;
-        }
-        
-        this.blinkTimer++;
-        
-        pushMatrix();
+            this.blinkTimer++;
             
-            translate(this.x, this.y);
-            scale(this.w / 300, this.h / 40);
-            translate(-this.x, -this.y);
+            pushMatrix();
+                
+                translate(this.x, this.y);
+                scale(this.w / 300, this.h / 40);
+                translate(-this.x, -this.y);
+                
+                if (this.selected) {
+                    for (var i = 0; i < 5; i++) {
+                        fill(255, 255, 255, 255 - i * 50);
+                        rect(this.x - i, this.y - i, this.w + i * 2, this.h + i * 2, 5);
+                    }
+                }
+                
+                image(images.input, this.x, this.y, this.w, this.h);
+                
+                textFont(createFont("monospace"));
+                textAlign(CORNER, CENTER);
+                textSize(20);
+                this.txt.length = constrain(this.txt.length, 0, 20);
+                for (var i = 0; i < this.txt.length; i++) {
+                    outlinedText(this.txt[i], this.x + i * 12 + 9, this.y + this.h / 2, color(255), color(0), 20);
+                }
+                
+                if (this.blinkTimer % 80 < 40 && this.selected) {
+                    outlinedText("|", this.x + this.txt.length * 12 + 9, this.y + this.h / 2, color(255), color(0), 20);
+                }
             
-            if (this.selected) {
-                for (var i = 0; i < 5; i++) {
-                    fill(255, 255, 255, 255 - i * 50);
-                    rect(this.x - i, this.y - i, this.w + i * 2, this.h + i * 2, 5);
+            popMatrix();
+            
+            if (typed && this.selected) {
+                this.blinkTimer = 0;
+                if (key.code !== 8) {
+                    this.txt.push(key);
+                }
+                else {
+                    this.txt.pop();
                 }
             }
-            
-            ctx.globalAlpha = 1;
-            image(images.input, this.x, this.y, this.w, this.h);
-            
-            textFont(createFont("monospace"));
-            textAlign("LEFT", "CENTER");
-            textSize(20);
+        }
+        
+    };
 
-            if (this.blinkTimer % 80 < 40 && this.selected) {
-                outlinedText("|", this.x + this.input.value.length * 11 + 9, this.y + this.h / 2, color(255), color(0), 20);
-            }
+    return _Input;
 
-            outlinedText(this.input.value, this.x + 9, this.y + this.h / 2, color(255), color(0), 20);
-        popMatrix();
-    }
+}) ();
 
-}
-
-var firstName = new Input(10, 205, 275, 110 / 3, "First Name", 20);
-var lastName = new Input(315, 205, 275, 110 / 3, "Last Name", 20);
+var firstName = new Input(10, 205, 275, 110 / 3);
+var lastName = new Input(315, 205, 275, 110 / 3);
 
 //]
 
 /** Button **/
 // [
 
-class Button {
+var Button = (function () {
     
-    constructor (x, y, w, h, func, icon, type, type2) {
+    var _Button = function (x, y, w, h, func, icon, type, type2) {
         this.x = x;
         this.y = y;
         this.w = w;
@@ -1672,33 +1641,21 @@ class Button {
         
         this.curState = false;
         this.prevState = false;
-    }
+    };
+    
+    _Button.prototype = {
         
-    draw () {
-        
-        this.mouseOver = cursro.x > this.x &&
-                            cursro.x < this.x + this.w &&
-                            cursro.y > this.y &&
-                            cursro.y < this.y + this.h;
-                            
-        if (this.mouseOver) {
-            cursor("pointer");
-            this.s = lerp(this.s, 1.05, 0.1);
-            if (clicked && !gamepad.isConnected()) {
-                this.func();
-                if (this.type.includes("fadeSelect")) {
-                    for (var i = 0; i < selectedButtons.length; i++) {
-                        if (selectedButtons[i].type2 === this.type2) {
-                            selectedButtons.splice(i, 1);
-                        }
-                    }
-                    selectedButtons.push(this);
-                }
-            }
-            else if (gamepad.isConnected()) {
-                this.curState = gamepad.isPressed("a");
-                
-                if (!this.curState && this.prevState) {
+        draw : function () {
+            
+            this.mouseOver = cursro.x > this.x &&
+                             cursro.x < this.x + this.w &&
+                             cursro.y > this.y &&
+                             cursro.y < this.y + this.h;
+                             
+            if (this.mouseOver) {
+                cursor("pointer");
+                this.s = lerp(this.s, 1.05, 0.1);
+                if (clicked && !gamepad.isConnected()) {
                     this.func();
                     if (this.type.includes("fadeSelect")) {
                         for (var i = 0; i < selectedButtons.length; i++) {
@@ -1709,44 +1666,62 @@ class Button {
                         selectedButtons.push(this);
                     }
                 }
+                else if (gamepad.isConnected()) {
+                    this.curState = gamepad.isPressed("a");
+                    
+                    if (!this.curState && this.prevState) {
+                        this.func();
+                        if (this.type.includes("fadeSelect")) {
+                            for (var i = 0; i < selectedButtons.length; i++) {
+                                if (selectedButtons[i].type2 === this.type2) {
+                                    selectedButtons.splice(i, 1);
+                                }
+                            }
+                            selectedButtons.push(this);
+                        }
+                    }
+                    
+                    this.prevState = this.curState;
+                }
+            }
+            else {
+                this.s = lerp(this.s, 1, 0.1);
+            }
+            
+            for (var i = 0; i < selectedButtons.length; i++) {
+                if (selectedButtons[i] === this) {
+                    this.fade = lerp(this.fade, 100, 0.1);
+                }
+                else {
+                    this.fade = lerp(this.fade, 0, 0.1);
+                }
+            }
+            
+            pushMatrix();
+                translate(this.x + this.w / 2, this.y + this.h / 2);
+                scale(this.s);
+                translate(-this.x - this.w / 2, -this.y - this.h / 2);
+                image(images.button, this.x, this.y, this.w, this.h);
                 
-                this.prevState = this.curState;
-            }
-        }
-        else {
-            this.s = lerp(this.s, 1, 0.1);
-        }
-        
-        for (var i = 0; i < selectedButtons.length; i++) {
-            if (selectedButtons[i] === this) {
-                this.fade = lerp(this.fade, 100, 0.1);
-            }
-            else {
-                this.fade = lerp(this.fade, 0, 0.1);
-            }
+                if (images[this.icon] !== undefined) {
+                    image(images[this.icon], this.x, this.y, this.w, this.h);
+                }
+                else {
+                    textAlign(CENTER, CENTER);
+                    textSize((this.w * this.h) / 500);
+                    outlinedText(this.icon, this.x + this.w / 2, this.y + this.h / 2, color(255), color(0), 40);
+                }
+                
+                fill(255, 255, 255, this.fade);
+                rect(this.x + this.w * 3 / 50, this.y + this.h * 3 / 50, this.w * 22 / 25, this.h * 22 / 25);
+            popMatrix();
         }
         
-        pushMatrix();
-            translate(this.x + this.w / 2, this.y + this.h / 2);
-            scale(this.s);
-            translate(-this.x - this.w / 2, -this.y - this.h / 2);
-            image(images.button, this.x, this.y, this.w, this.h);
-            
-            if (images[this.icon] !== undefined) {
-                image(images[this.icon], this.x, this.y, this.w, this.h);
-            }
-            else {
-                textAlign("CENTER", "CENTER");
-                textSize((this.w * this.h) / 500);
-                outlinedText(this.icon, this.x + this.w / 2, this.y + this.h / 2, color(255), color(0), 40);
-            }
-            
-            fill(255, 255, 255, this.fade);
-            rect(this.x + this.w * 3 / 50, this.y + this.h * 3 / 50, this.w * 22 / 25, this.h * 22 / 25);
-        popMatrix();
-    }
+    };
     
-}
+    return _Button;
+    
+}) ();
 
 // Player creation {
 
@@ -1866,12 +1841,7 @@ var PLAY = new Button(225, 325, 150, 150, function () {
 /** Draw and mouseClicked functions **/
 // [
 
-var frameCount = 0;
-var frameRate = 60;
-var FPS = 0;
-var frameTimes = [new Date().getTime()];
-
-var draw = function () {
+draw = function () {
     try {
         cursor("auto");
         
@@ -1884,7 +1854,6 @@ var draw = function () {
             switch (scene) {
                 case "charCreation" : {
                     image(images.noiseSquare, 0, 0, width, height);
-                    
                     player.r += 0.3;
                     player.draw();
                     
@@ -1902,8 +1871,9 @@ var draw = function () {
                         player.scale = lerp(player.scale, 1, 0.1);
                         player.x = lerp(player.x, 75, 0.1);
                         player.y = lerp(player.y, 75, 0.1);
-                        player.name.first = firstName.input.value;
-                        player.name.last = lastName.input.value;                        
+                        player.name.first = firstName.txt;
+                        player.name.last = lastName.txt;
+                        
                         
                         firstName.draw();
                         lastName.draw();
@@ -1914,6 +1884,11 @@ var draw = function () {
                         charCreateWitch.draw();
                         charCreateWizard.draw();
                         charCreateNext.draw();
+                        
+                        textAlign(BASELINE);
+                        textSize(20);
+                        outlinedText("First Name", 10, 200, color(255), color(0), 20);
+                        outlinedText("Last Name", 315, 200, color(255), color(0), 20);
                         
                         if (notReady.active) {
                             notReady.opac++;
@@ -1926,7 +1901,7 @@ var draw = function () {
                         }
                         notReady.opac = constrain(notReady.opac, 0, 255);
                         
-                        textAlign("CENTER", "CENTER");
+                        textAlign(CENTER, CENTER);
                         outlinedText("Please finish filling out the required information", 300, 275, color(255, 255, 255, notReady.opac), color(255, 0, 0, notReady.opac), 20);
                     }
                     else {
@@ -1997,31 +1972,23 @@ var draw = function () {
                 } break;
             }
         }
-
-        //sceneChange.pack();
+        
+        sceneChange.pack();
         typed = false;
         clicked = false;
-
-        frameTimes.push(new Date().getTime());
-        if (frameTimes.length > 100) {
-            frameTimes.splice(0, 1);
-        }
-        FPS = 1000 * frameTimes.length / (frameTimes[frameTimes.length - 1] - frameTimes[0]);
     }
     catch (e) {
-        console.error(e);
+        println(e);
     }
 };
 
-var animation = setInterval(
-    function () {
-        frameCount++;
-        draw();
-    },
-    1000 / frameRate
-);
+keyTyped = function () {
+    typed = true;
+};
 
-
+mouseClicked = function () {
+    clicked = true;
+};
 
 //]
 
