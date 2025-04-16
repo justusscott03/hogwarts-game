@@ -15,7 +15,7 @@ function roundRect (x, y, width, height, radius) {
 }
 
 function rect (x, y, w, h, radius) {
-    var xPos, yPos, width, height;
+    let xPos, yPos, width, height;
 
     if (curRectMode === "CORNER") {
         xPos = x;
@@ -69,7 +69,7 @@ function arc (x, y, w, h, start, stop) {
 }
 
 function ellipse (x, y, w, h) {
-    var xPos, yPos, width, height;
+    let xPos, yPos, width, height;
     
     if (curEllipseMode === "CENTER") {
         xPos = x;

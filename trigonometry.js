@@ -15,19 +15,19 @@ function tan (degrees) {
 }
 
 function asin (degrees) {
-    return Math.asin(angle(degrees));
+    return Math.asin(degrees) * 180 / Math.PI;
 }
 
 function acos (degrees) {
-    return Math.acos(angle(degrees));
+    return Math.acos(degrees) * 180 / Math.PI;
 }
 
 function atan (degrees) {
-    return Math.atan(angle(degrees));
+    return Math.atan(degrees) * 180 / Math.PI;
 }
 
-function atan2 (degrees) {
-    return Math.atan2(angle(degrees));
+function atan2 (y, x) {
+    return Math.atan2(y, x) * 180 / Math.PI;
 }
 
 function radians (angle) {

@@ -1,6 +1,6 @@
 // Convert a number to hexadecimal
 function toHex (num) {
-    var chars = "0123456789ABCDEF";
+    let chars = "0123456789ABCDEF";
     
     return chars[(num - (num % 16)) / 16] + chars[num % 16];
 }

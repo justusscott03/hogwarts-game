@@ -46,7 +46,7 @@ class Base64AudioPlayer {
     }
 
     _convertBase64ToArrayBuffer (t) {
-        for (var e = atob(t.split(",")[1]), i = e.length, a = new Uint8Array(i), n = 0; n < i; n++) {
+        for (let e = atob(t.split(",")[1]), i = e.length, a = new Uint8Array(i), n = 0; n < i; n++) {
             a[n] = e.charCodeAt(n);
         }
         
@@ -55,8 +55,8 @@ class Base64AudioPlayer {
 
     loadAudio (t) {
         if (t >= 0 && t < this.audioArray.length) {
-            var e = this._convertBase64ToArrayBuffer(this.audioArray[t]);
-            var i = this;
+            let e = this._convertBase64ToArrayBuffer(this.audioArray[t]);
+            let i = this;
             this.audioContext.decodeAudioData(e).then(function (buffer) {
                 i.buffer = buffer;
                 i.duration = buffer.duration;
@@ -97,13 +97,13 @@ class Base64AudioPlayer {
             this.source.buffer = this.buffer;
             this.source.connect(this.analyser);
             this.analyser.connect(this.audioContext.destination);
-            var t = this.elapsedTime > 0 ? this.elapsedTime : 0;
+            let t = this.elapsedTime > 0 ? this.elapsedTime : 0;
             this.startTime = this.audioContext.currentTime - t;
             this.source.start(0, t);
             this.isPlaying = !0;
             this.hasEnded = !1;
             this.isPaused = !1;
-            var e = this;
+            let e = this;
             this.source.onended = function () {
                 if (e.isPaused) {}
                 else if (e.loopTrack) {
@@ -133,9 +133,9 @@ class Base64AudioPlayer {
 
 }
 
-// var audioArray = [];
+// let audioArray = [];
 
-// var audioPlayer = new Base64AudioPlayer(audioArray);
+// let audioPlayer = new Base64AudioPlayer(audioArray);
 
 // audioPlayer.loadAudio(0);
 

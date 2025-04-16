@@ -22,17 +22,17 @@ Credit to NonPlayerCharacter (he/him)(@JustASideQuestNPC) for the gamepad compat
 /** Lots of variables **/
 // [
 
-var scene = "charCreation";
-var selectedButtons = [];
-var difficulty = "normal";
+let scene = "charCreation";
+let selectedButtons = [];
+let difficulty = "normal";
 
 // Player creation {
 
-var charCreateMode = "skinTone";
-var eyeColorIndex = 2;
-var skinToneIndex = 2;
-var cloakColorIndex = 11;
-var eyeColors = [
+let charCreateMode = "skinTone";
+let eyeColorIndex = 2;
+let skinToneIndex = 2;
+let cloakColorIndex = 11;
+const eyeColors = [
     color(135, 206, 235),
     color(85, 170, 85),
     color(150, 100, 50),
@@ -40,14 +40,14 @@ var eyeColors = [
     color(192, 192, 192),
     color(75, 54, 33)
 ];
-var skinTones = [
+const skinTones = [
     color(255, 224, 189),
     color(242, 203, 169),
     color(198, 134, 66),
     color(147, 91, 44),
     color(94, 60, 30)
 ];
-var cloakColors = [
+const cloakColors = [
     color(178, 50, 36),
     color(0, 104, 198),
     color(50, 205, 0),
@@ -63,15 +63,15 @@ var cloakColors = [
     color(200),
     color(255)
 ];
-var creationIndex = 1;
-var notReady = {
+let creationIndex = 1;
+const notReady = {
     active : false,
     opac : 0
 };
 
 //}
 
-var cam = {
+const cam = {
     x : 0,
     y : 0,
     z : 1
@@ -79,7 +79,7 @@ var cam = {
 
 // Goblin data {
 
-var goblinData = {
+const goblinData = {
     assasin : {
         health : 400,
         attackSpeed : 120,
@@ -121,7 +121,7 @@ var goblinData = {
 
 // Spell data {
 
-var spells = {
+const spells = {
     basicCast : {
         name : "basicCast",
         damage : 5,
@@ -136,7 +136,7 @@ var spells = {
 
 // Canvas reset function {
 
-function resetCanvas(canvas, ctx) {
+function resetCanvas (canvas, ctx) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1.0;
@@ -159,9 +159,9 @@ function resetCanvas(canvas, ctx) {
 /** Outlined text, credit to SP(@Prodigy6) **/
 // [
 
-var outlinedText = function (t, x, y, f, s, w) {
+let outlinedText = function (t, x, y, f, s, w) {
     fill(s);
-    for(var i = 0; i < 30; i++) {
+    for(let i = 0; i < 30; i++) {
         text(t, x + sin(i * 16) * w / 16, y + cos(i * 16) * w / 16);
     }
     fill(f);
@@ -173,28 +173,30 @@ var outlinedText = function (t, x, y, f, s, w) {
 /** User interaction **/
 // [
 
-var typed = false;
-var clicked = false;
+let typed = false;
+let clicked = false;
 
-var keys = [];
-var keyPressed = function (event) {
+let keys = [];
+let key;
+let keyPressed = function (event) {
     keys[event.keyCode] = true;
+    key = event.keyCode;
 };
-var keyReleased = function (event) {
+let keyReleased = function (event) {
     keys[event.keyCode] = false;
 };
 
-var keyTyped = function (event) {
+let keyTyped = function (event) {
     typed = true;
 };
 
-var mouseX, mouseY;
-var mouseMove = function (event) {
+let mouseX, mouseY;
+let mouseMove = function (event) {
     mouseX = event.clientX;
     mouseY = event.clientY;
 };
 
-var mouseClicked = function (event) {
+let mouseClicked = function (event) {
     clicked = true;
 };
 
@@ -203,18 +205,18 @@ var mouseClicked = function (event) {
 /** Collision **/
 // [
 
-var rectCircCol =  function (rx, ry, rw, rh, cx, cy, cr) {
-    var clx = Math.max(rx, Math.min(cx, rx + rw));
-    var cly = Math.max(ry, Math.min(cy, ry + rh));
+let rectCircCol =  function (rx, ry, rw, rh, cx, cy, cr) {
+    let clx = Math.max(rx, Math.min(cx, rx + rw));
+    let cly = Math.max(ry, Math.min(cy, ry + rh));
     
-    var dx = cx - clx;
-    var dy = cy - cly;
-    var ds = dx * dx + dy * dy;
+    let dx = cx - clx;
+    let dy = cy - cly;
+    let ds = dx * dx + dy * dy;
     
     return ds < cr * cr;
 };
 
-var circCircCol = function (cx, cy, cd, cx2, cy2, cd2) {
+let circCircCol = function (cx, cy, cd, cx2, cy2, cd2) {
     if (dist(cx, cy, cx2, cy2) < cd / 2 + cd2 / 2) {
         return true;
     } 
@@ -292,7 +294,7 @@ class Gamepad {
             if (padIndex === -1) {
                 // Written by Mushy Avocado
                 this._getGamepad = function () {
-                    var gamepads = window.navigator.webkitGetGamepads();
+                    const gamepads = window.navigator.webkitGetGamepads();
                     return gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3] || null;
                 };
             }
@@ -306,7 +308,7 @@ class Gamepad {
             if (padIndex === -1) {
                 // Written by Mushy Avocado
                 this._getGamepad = function () {
-                    var gamepads = window.navigator.getGamepads();
+                    const gamepads = window.navigator.getGamepads();
                     return gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3] || null;
                 };
             }
@@ -328,7 +330,7 @@ class Gamepad {
     
     isPressed (button) {
         if (this._gamepad !== null) {
-            var index = this._buttonCodes[button];
+            const index = this._buttonCodes[button];
             if (button === "left trigger" || button === "right trigger") {
                 if (this._gamepad.axes[index - 2] !== undefined) {
                     return this._gamepad.axes[index - 2] === 1;
@@ -358,7 +360,7 @@ class Gamepad {
                 return this._gamepad.buttons[7].value;
             }
             
-            var value;
+            let value;
             if (axis === "left stick x") {
                 value = this._gamepad.axes[0];
             }
@@ -391,7 +393,7 @@ class Gamepad {
     }
     
     stickVector (stick) {
-        var v = this.stickPos(stick);
+        let v = this.stickPos(stick);
         v.normalize();
         return v;
     }
@@ -411,21 +413,22 @@ class Gamepad {
     }
 
 }
-var gamepad = new Gamepad();
+
+const gamepad = new Gamepad();
 
 //]
 
 /** Images **/
 // [
 
-var images = {
+const images = {
     cursorRings : function () {
 
         background(0, 0, 0, 0);
         
         noFill();
         
-        for (var i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             strokeWeight(i);
             stroke(255, 245, 110, 255 - i * 50);
             ellipse(25, 25, 45, 45);
@@ -441,7 +444,7 @@ var images = {
         
         noFill();
 
-        for (var i = 0; i < 5; i++) {
+        for (let i = 0; i < 5; i++) {
             strokeWeight(i);
             stroke(255, 245, 110, 255 - i * 50);
             arc(25, 25, 30, 30, 215, 325);
@@ -455,7 +458,7 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        // let msk = createGraphics(width, height, P2D);
         
         // msk.background(0, 0, 0, 0);
         
@@ -463,11 +466,11 @@ var images = {
         
         // msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        // let bkg = createGraphics(width, height, P2D);
         
         // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
+        // for (let i = 0; i < 100; i++) {
+        //     let lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
         //     bkg.fill(lerpC);
         //     bkg.rect(0, i, 100, 1);
         // }
@@ -485,8 +488,8 @@ var images = {
             ctx.clip();
 
             noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
+            for (let i = 0; i < 100; i++) {
+                let lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
                 fill(lerpC);
                 rect(0, i, 100, 1);
             }
@@ -508,7 +511,7 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        // let msk = createGraphics(width, height, P2D);
         
         // msk.background(0, 0, 0, 0);
         
@@ -516,11 +519,11 @@ var images = {
         
         // msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        // let bkg = createGraphics(width, height, P2D);
         
         // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
+        // for (let i = 0; i < 100; i++) {
+        //     let lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
         //     bkg.fill(lerpC);
         //     bkg.rect(0, i, 100, 1);
         // }
@@ -538,8 +541,8 @@ var images = {
             ctx.clip();
 
             noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
+            for (let i = 0; i < 100; i++) {
+                let lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
                 fill(lerpC);
                 rect(0, i, 100, 1);
             }
@@ -561,7 +564,7 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        // let msk = createGraphics(width, height, P2D);
         
         // msk.background(0, 0, 0, 0);
         
@@ -569,11 +572,11 @@ var images = {
         
         // msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        // let bkg = createGraphics(width, height, P2D);
         
         // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
+        // for (let i = 0; i < 100; i++) {
+        //     let lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
         //     bkg.fill(lerpC);
         //     bkg.rect(0, i, 100, 1);
         // }
@@ -591,8 +594,8 @@ var images = {
             ctx.clip();
 
             noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
+            for (let i = 0; i < 100; i++) {
+                let lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
                 fill(lerpC);
                 rect(0, i, 100, 1);
             }
@@ -614,7 +617,7 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        // var msk = createGraphics(width, height, P2D);
+        // let msk = createGraphics(width, height, P2D);
         
         // msk.background(0, 0, 0, 0);
         
@@ -622,11 +625,11 @@ var images = {
         
         // msk = msk.get();
         
-        // var bkg = createGraphics(width, height, P2D);
+        // let bkg = createGraphics(width, height, P2D);
         
         // bkg.noStroke();
-        // for (var i = 0; i < 100; i++) {
-        //     var lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
+        // for (let i = 0; i < 100; i++) {
+        //     let lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
         //     bkg.fill(lerpC);
         //     bkg.rect(0, i, 100, 1);
         // }
@@ -644,8 +647,8 @@ var images = {
             ctx.clip();
 
             noStroke();
-            for (var i = 0; i < 100; i++) {
-                var lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
+            for (let i = 0; i < 100; i++) {
+                let lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
                 fill(lerpC);
                 rect(0, i, 100, 1);
             }
@@ -667,11 +670,11 @@ var images = {
         
         background(0, 0, 0, 0);
         
-        var xOff = 0;
-        for (var x = 0; x < 100; x++) {
-            var yOff = 0;
-            for (var y = 0; y < 100; y++) {
-                var bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
+        let xOff = 0;
+        for (let x = 0; x < 100; x++) {
+            let yOff = 0;
+            for (let y = 0; y < 100; y++) {
+                let bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
                 fill(bright);
                 point(x, y);
                 yOff += 0.02;
@@ -707,11 +710,11 @@ var images = {
         
         background(0, 0, 0, 0);
    
-        var xOff = 0;
-        for (var x = 0; x < 300; x++) {
-            var yOff = 0;
-            for (var y = 0; y < 40; y++) {
-                var bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
+        let xOff = 0;
+        for (let x = 0; x < 300; x++) {
+            let yOff = 0;
+            for (let y = 0; y < 40; y++) {
+                let bright = round(map(noise(xOff, yOff), 0, 1, 0, 255));
                 fill(bright);
                 point(x, y);
                 yOff += 0.02;
@@ -851,10 +854,10 @@ var images = {
         
         pushMatrix();
             translate(3, 30);
-            for (var i = 0; i < 20; i++) {
+            for (let i = 0; i < 20; i++) {
                 noStroke();
                 
-                var lerpC = lerpColor(color(255, 0, 0), color(255), i / 20);
+                let lerpC = lerpColor(color(255, 0, 0), color(255), i / 20);
                 
                 pushMatrix();
                     scale((20 - i) / 20);
@@ -912,8 +915,8 @@ var images = {
         stroke(217, 203, 185);
         strokeWeight(4);
         line(25, 7, 25, 43);
-        for (var i = 0; i < 12; i++) {
-            var lerpC = lerpColor(color(163, 136, 57), color(0), i / 12);
+        for (let i = 0; i < 12; i++) {
+            let lerpC = lerpColor(color(163, 136, 57), color(0), i / 12);
             
             stroke(lerpC);
             strokeCap("SQUARE");
@@ -931,10 +934,10 @@ var images = {
 /** Image loading **/
 // [
 
-var curLoad = 0;
-var loaded = false;
-var load = function () {
-    var obj = Object.keys(images);
+let curLoad = 0;
+let loaded = false;
+let load = function () {
+    let obj = Object.keys(images);
 
     resetCanvas(canvas, ctx);
     
@@ -968,7 +971,7 @@ class Cursor {
             this.y = mouseY;
         }
         else {
-            var leftStick = gamepad.stickPos("left");
+            let leftStick = gamepad.stickPos("left");
             
             this.x += leftStick.x * 5;
             this.y += leftStick.y * 5;
@@ -990,7 +993,7 @@ class Cursor {
 
 }
 
-var cursro = new Cursor(300, 300);
+const cursro = new Cursor(300, 300);
 
 //]
 
@@ -1037,7 +1040,7 @@ class SceneChange {
 
 }
 
-var sceneChange = new SceneChange();
+const sceneChange = new SceneChange();
 
 //]
 
@@ -1090,7 +1093,7 @@ class SpellCast {
     
 }
 
-var spellCasts = [];
+const spellCasts = [];
 
 //]
 
@@ -1159,9 +1162,9 @@ class Spell {
             fill(1, 1, 1, this.grayOpac);
             quad(this.x + this.w / 2, this.y, this.x + this.w, this.y + this.h / 2, this.x + this.w / 2, this.y + this.h, this.x, this.y + this.h / 2);
             
-            var reload = map(this.reload, 0, this.maxReload, -90, 270);
+            let reload = map(this.reload, 0, this.maxReload, -90, 270);
             
-            strokeCap(SQUARE);
+            strokeCap("SQUARE");
             strokeWeight(5);
             stroke(150, 150, 150, this.grayOpac);
             noFill();
@@ -1171,10 +1174,10 @@ class Spell {
 
 }
 
-var spell1 = new Spell(530, 490, 60, 60, "power");
-var spell2 = new Spell(490, 530, 60, 60, "forbidden");
-var spell3 = new Spell(450, 490, 60, 60, "force");
-var spell4 = new Spell(490, 450, 60, 60, "control");
+let spell1 = new Spell(530, 490, 60, 60, "power");
+let spell2 = new Spell(490, 530, 60, 60, "forbidden");
+let spell3 = new Spell(450, 490, 60, 60, "force");
+let spell4 = new Spell(490, 450, 60, 60, "control");
 
 //]
 
@@ -1193,11 +1196,12 @@ class SpellSheet {
     }
         
     draw () {
-        for (var i = 0; i < this.spells.length; i++) {
+
+        for (let i = 0; i < this.spells.length; i++) {
             this.spells[i].update();
             this.spells[i].draw();
-            
-            if (typed && key.code === i + 49) {
+
+            if (typed && key === i + 49) {
                 this.spells[i].use();
             }
         }
@@ -1205,7 +1209,7 @@ class SpellSheet {
 
 }
 
-var spellSheet = new SpellSheet(spell1, spell2, spell3, spell4);
+const spellSheet = new SpellSheet(spell1, spell2, spell3, spell4);
 
 //]
 
@@ -1386,7 +1390,7 @@ class Player {
     
 }
 
-var player = new Player(300, 300, 75);
+const player = new Player(300, 300, 75);
 
 //]
 
@@ -1450,7 +1454,8 @@ class Goblin {
     }
 
 }
-var goblins = [];
+
+const goblins = [];
 goblins.add = function (x, y, s, type, level) {
     this.push(new Goblin(x, y, s, type, level));
 };
@@ -1482,7 +1487,7 @@ class CollisionBox {
         if (dist(player.x, player.y, this.x, this.y) < 600) {
             if (this.type === "circ") {
                 if (circCircCol(this.x, this.y, this.w, player.x, player.y, player.s)) {
-                    var angle = atan2(player.x - this.x, player.y - this.y);
+                    let angle = atan2(player.x - this.x, player.y - this.y);
                     
                     player.x = this.x - cos(angle + 90) * (this.w / 2 + player.s / 2);
                     player.y = this.y + sin(angle + 90) * (this.w / 2 + player.s / 2);
@@ -1507,13 +1512,13 @@ class CollisionBox {
             }
         }
         
-        for (var i = 0; i < goblins.length; i++) {
-            var g = goblins[i];
+        for (let i = 0; i < goblins.length; i++) {
+            let g = goblins[i];
             
             if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600) {
                 if (this.type === "circ") {
                     if (circCircCol(this.x, this.y, this.w, g.x, g.y, g.s)) {
-                        var angle = Math.atan2(g.x - this.x, g.y - this.y);
+                        let angle = Math.atan2(g.x - this.x, g.y - this.y);
                         
                         g.x = this.x - cos(angle + 90) * (g.s / 2 + this.w / 2);
                         g.y = this.y + sin(angle + 90) * (g.s / 2 + this.w / 2);
@@ -1539,8 +1544,8 @@ class CollisionBox {
             }
         }
         
-        for (var i = spellCasts.length - 1; i >= 0; i--) {
-            var s = spellCasts[i];
+        for (let i = spellCasts.length - 1; i >= 0; i--) {
+            let s = spellCasts[i];
             if (dist(this.x, this.y, s.x, s.y) < 600) {
                 if ((this.type === "circ" && circCircCol(s.x, s.y, s.w, this.x, this.y, this.w)) || (this.type === "rect" && rectCircCol(this.x, this.y, this.w, this.h, s.x, s.y, s.w / 2))) {
                     spellCasts.splice(i, 1);
@@ -1551,7 +1556,7 @@ class CollisionBox {
 
 }
 
-var collisionBoxes = [];
+const collisionBoxes = [];
 collisionBoxes.add = function (x, y, w, h, type) {
     this.push(new CollisionBox(x, y, w, h, type));
 };
@@ -1561,7 +1566,7 @@ collisionBoxes.add = function (x, y, w, h, type) {
 /** Map loading **/
 // [
 
-var loadMap = function () {
+let loadMap = function () {
     collisionBoxes.add(500, 500, 200, 200, "rect");
     collisionBoxes.add(100, 100, 50, 50, "circ");
     goblins.add(300, 300, 75, "assasin", 20);
@@ -1638,7 +1643,7 @@ class Input {
             translate(-this.x, -this.y);
             
             if (this.selected) {
-                for (var i = 0; i < 5; i++) {
+                for (let i = 0; i < 5; i++) {
                     fill(255, 255, 255, 255 - i * 50);
                     rect(this.x - i, this.y - i, this.w + i * 2, this.h + i * 2, 5);
                 }
@@ -1661,8 +1666,8 @@ class Input {
 
 }
 
-var firstName = new Input(10, 205, 275, 110 / 3, "First Name", 20);
-var lastName = new Input(315, 205, 275, 110 / 3, "Last Name", 20);
+const firstName = new Input(10, 205, 275, 110 / 3, "First Name", 20);
+const lastName = new Input(315, 205, 275, 110 / 3, "Last Name", 20);
 
 //]
 
@@ -1702,7 +1707,7 @@ class Button {
             if (clicked && !gamepad.isConnected()) {
                 this.func();
                 if (this.type.includes("fadeSelect")) {
-                    for (var i = 0; i < selectedButtons.length; i++) {
+                    for (let i = 0; i < selectedButtons.length; i++) {
                         if (selectedButtons[i].type2 === this.type2) {
                             selectedButtons.splice(i, 1);
                         }
@@ -1716,7 +1721,7 @@ class Button {
                 if (!this.curState && this.prevState) {
                     this.func();
                     if (this.type.includes("fadeSelect")) {
-                        for (var i = 0; i < selectedButtons.length; i++) {
+                        for (let i = 0; i < selectedButtons.length; i++) {
                             if (selectedButtons[i].type2 === this.type2) {
                                 selectedButtons.splice(i, 1);
                             }
@@ -1732,7 +1737,7 @@ class Button {
             this.s = lerp(this.s, 1, 0.1);
         }
         
-        for (var i = 0; i < selectedButtons.length; i++) {
+        for (let i = 0; i < selectedButtons.length; i++) {
             if (selectedButtons[i] === this) {
                 this.fade = lerp(this.fade, 100, 0.1);
             }
@@ -1765,7 +1770,7 @@ class Button {
 
 // Player creation {
 
-var charCreateLeft = new Button(50, 250, 100, 100, function () {
+const charCreateLeft = new Button(50, 250, 100, 100, function () {
     if (charCreateMode === "eyeColor") {
         if (eyeColorIndex === 0) {
             eyeColorIndex = eyeColors.length - 1;
@@ -1791,7 +1796,7 @@ var charCreateLeft = new Button(50, 250, 100, 100, function () {
         }
     }
 }, "leftArrow", "");
-var charCreateRight = new Button(450, 250, 100, 100, function () {
+const charCreateRight = new Button(450, 250, 100, 100, function () {
     if (charCreateMode === "eyeColor") {
         if (eyeColorIndex === eyeColors.length - 1) {
             eyeColorIndex = 0;
@@ -1818,17 +1823,17 @@ var charCreateRight = new Button(450, 250, 100, 100, function () {
     }
 }, "rightArrow", "");
 
-var charCreateSkin = new Button(180, 75, 60, 60, function () {
+const charCreateSkin = new Button(180, 75, 60, 60, function () {
     charCreateMode = "skinTone";
 }, "miniPlayer", "fadeSelect default", "appearance");
-var charCreateEye = new Button(270, 75, 60, 60, function () {
+const charCreateEye = new Button(270, 75, 60, 60, function () {
     charCreateMode = "eyeColor";
 }, "miniEye", "fadeSelect", "appearance");
-var charCreateCloak = new Button(360, 75, 60, 60, function () {
+const charCreateCloak = new Button(360, 75, 60, 60, function () {
     charCreateMode = "cloakColor";
 }, "miniCloak", "fadeSelect", "appearance");
 
-var charCreateNext = new Button(238.5, 450, 125, 125, function () {
+const charCreateNext = new Button(238.5, 450, 125, 125, function () {
     selectedButtons.length = 0;
     if (creationIndex === 1) {
         creationIndex++;
@@ -1843,34 +1848,34 @@ var charCreateNext = new Button(238.5, 450, 125, 125, function () {
     }
 }, "NEXT", "");
 
-var charCreateWitch = new Button(175, 315, 100, 100, function () {
+const charCreateWitch = new Button(175, 315, 100, 100, function () {
     player.witchOrWizard = "witch";
 }, "Witch", "fadeSelect", "witchOrWizard");
-var charCreateWizard = new Button(325, 315, 100, 100, function () {
+const charCreateWizard = new Button(325, 315, 100, 100, function () {
     player.witchOrWizard  = "wizard";
 }, "Wizard", "fadeSelect", "witchOrWizard");
 
-var charCreateWand1 = new Button(195, 25, 100, 100, function () {
+const charCreateWand1 = new Button(195, 25, 100, 100, function () {
     player.wand = 1;
 }, "wand1", "fadeSelect", "wand");
-var charCreateWand2 = new Button(320, 25, 100, 100, function () {
+const charCreateWand2 = new Button(320, 25, 100, 100, function () {
     player.wand = 2;
 }, "wand2", "fadeSelect", "wand");
-var charCreateWand3 = new Button(445, 25, 100, 100, function () {
+const charCreateWand3 = new Button(445, 25, 100, 100, function () {
     player.wand = 3;
 }, "wand3", "fadeSelect", "wand");
 
-var charCreateEasy = new Button(100, 150, 100, 100, function () {
+const charCreateEasy = new Button(100, 150, 100, 100, function () {
     difficulty = "easy";
 }, "Easy", "fadeSelect", "difficulty");
-var charCreateNormal = new Button(250, 150, 100, 100, function () {
+const charCreateNormal = new Button(250, 150, 100, 100, function () {
     difficulty = "normal";
 }, "Normal", "fadeSelect default", "difficulty");
-var charCreateHard = new Button(400, 150, 100, 100, function () {
+const charCreateHard = new Button(400, 150, 100, 100, function () {
     difficulty = "hard";
 }, "Hard", "fadeSelect", "difficulty");
 
-var PLAY = new Button(225, 325, 150, 150, function () {
+const PLAY = new Button(225, 325, 150, 150, function () {
     sceneChange.reset("game");
 }, "Play", "");
 
@@ -1881,12 +1886,12 @@ var PLAY = new Button(225, 325, 150, 150, function () {
 /** Draw and mouseClicked functions **/
 // [
 
-var frameCount = 0;
-var frameRate = 60;
-var FPS = 0;
-var frameTimes = [new Date().getTime()];
+let frameCount = 0;
+let frameRate = 60;
+let FPS = 0;
+let frameTimes = [new Date().getTime()];
 
-var draw = function () {
+let draw = function () {
     try {
         cursor("auto");
         
@@ -1898,6 +1903,8 @@ var draw = function () {
         else {
             switch (scene) {
                 case "charCreation" : {
+                    ctx.globalAlpha = 1;
+
                     image(images.noiseSquare, 0, 0, width, height);
                     
                     player.r += 0.3;
@@ -1961,7 +1968,7 @@ var draw = function () {
                         player.r = atan2(mouseY - 300, mouseX - 300) - 90;
                     }
                     else {
-                        var leftStick = gamepad.stickPos("left");
+                        let leftStick = gamepad.stickPos("left");
                         
                         if (leftStick.y > 0.5 || leftStick.y < -0.5 || leftStick.x > 0.5 || leftStick.x < -0.5) {
                             player.r = atan2(leftStick.y, leftStick.x) - 90;
@@ -1979,7 +1986,7 @@ var draw = function () {
                         player.update();
                         player.draw();
                         
-                        for (var i = spellCasts.length - 1; i >= 0; i--) {
+                        for (let i = spellCasts.length - 1; i >= 0; i--) {
                             spellCasts[i].update();
                             spellCasts[i].draw();
                             if (!spellCasts[i].visible) {
@@ -1987,7 +1994,7 @@ var draw = function () {
                             }
                             
                             
-                            for (var j = 0; j < goblins.length; j++) {
+                            for (let j = 0; j < goblins.length; j++) {
                                 if (spellCasts.length !== 0) {
                                     if (circCircCol(spellCasts[i].x, spellCasts[i].y, spellCasts[i].w, goblins[j].x, goblins[j].y, goblins[j].s)) {
                                         goblins[j].damage(spellCasts[i].name);
@@ -1998,12 +2005,12 @@ var draw = function () {
                             
                         }
                         
-                        for (var i = 0; i < goblins.length; i++) {
+                        for (let i = 0; i < goblins.length; i++) {
                             goblins[i].update();
                             goblins[i].draw();
                         }
                         
-                        for (var i = 0; i < collisionBoxes.length; i++) {
+                        for (let i = 0; i < collisionBoxes.length; i++) {
                             collisionBoxes[i].run();
                         }
                     popMatrix();
@@ -2013,7 +2020,7 @@ var draw = function () {
             }
         }
 
-        //sceneChange.pack();
+        sceneChange.pack();
         typed = false;
         clicked = false;
 
@@ -2028,7 +2035,7 @@ var draw = function () {
     }
 };
 
-var animation = setInterval(
+let animation = setInterval(
     function () {
         frameCount++;
         draw();
