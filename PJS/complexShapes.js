@@ -31,3 +31,5 @@ function bezierVertex (cx1, cy1, cx2, cy2, x, y) {
 function strokeJoin (MODE) {
     ctx.lineJoin = MODE;
 }
+
+export { beginShape, endShape, vertex, bezierVertex, strokeJoin };

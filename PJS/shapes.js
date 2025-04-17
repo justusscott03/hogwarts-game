@@ -154,11 +154,11 @@ function bezier (x1, y1, cx1, cy1, cx2, cy2, x2, y2) {
 }
 
 function ellipseMode (MODE) {
-    curEllipseMode = MODE;
+    window.curEllipseMode = MODE;
 }
 
 function rectMode (MODE) {
-    curRectMode = MODE;
+    window.curRectMode = MODE;
 }
 
 function strokeCap (MODE) {
@@ -174,3 +174,5 @@ function strokeCap (MODE) {
     
     ctx.lineCap = MODE;
 }
+
+export { rect, arc, ellipse, triangle, quad, image, line, point, bezier, ellipseMode, rectMode, strokeCap };

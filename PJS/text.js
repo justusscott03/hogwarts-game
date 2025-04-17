@@ -1,6 +1,6 @@
 function textFont (font) {
-    globalFont = font;
-    ctx.font = globalSize + "px " + globalFont;
+    window.globalFont = font;
+    ctx.font = window.globalSize + "px " + window.globalFont;
 }
 
 function createFont (font) {
@@ -8,8 +8,8 @@ function createFont (font) {
 }
 
 function textSize (size) {
-    globalSize = size;
-    ctx.font = globalSize + "px " + globalFont;
+    window.globalSize = size;
+    ctx.font = window.globalSize + "px " + window.globalFont;
 }
 
 function textAlign (ALIGN, YALIGN = "BASELINE") {
@@ -40,3 +40,5 @@ function textAlign (ALIGN, YALIGN = "BASELINE") {
 function text (message, x, y) {
     ctx.fillText(message, x, y);
 }
+
+export { textFont, createFont, textSize, textAlign, text };

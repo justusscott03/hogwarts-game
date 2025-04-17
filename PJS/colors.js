@@ -1,3 +1,5 @@
+import { constrain } from "./math.js";
+
 // Convert a number to hexadecimal
 function toHex (num) {
     let chars = "0123456789ABCDEF";
@@ -119,3 +121,4 @@ function lerpColor (color1, color2, amt) {
     return `rgb(${r}, ${g}, ${b})`;
 }
   
+export { color, fill, noFill, background, noStroke, strokeWeight, stroke, lerpColor };

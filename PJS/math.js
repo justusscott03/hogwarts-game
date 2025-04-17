@@ -227,3 +227,4 @@ function noise (x, y, z) {
     return sum;
 }
 
+export { random, dist, constrain, min, max, abs, log, pow, sq, sqrt, round, ceil, floor, map, lerp, noise };

@@ -25,3 +25,5 @@ function get (x = 0, y = 0, w = width, h = height) {
 function cursor (cursor) {
     document.body.style.cursor = cursor;
 }
+
+export { get, cursor };

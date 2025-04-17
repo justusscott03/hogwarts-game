@@ -1,10 +1,23 @@
+// Import custom processing.js library
+import { color, fill, noFill, background, noStroke, strokeWeight, stroke, lerpColor } from "./PJS/colors.js";
+import { beginShape, endShape, vertex, bezierVertex, strokeJoin } from "./PJS/complexShapes.js";
+import { random, dist, constrain, min, max, abs, log, pow, sq, sqrt, round, ceil, floor, map, lerp, noise } from "./PJS/math.js";
+import { get, cursor } from "./PJS/other.js";
+import { rect, arc, ellipse, triangle, quad, image, line, point, bezier, ellipseMode, rectMode, strokeCap } from "./PJS/shapes.js";
+import { textFont, createFont, textSize, textAlign, text } from "./PJS/text.js";
+import { pushMatrix, translate, rotate, scale, popMatrix, resetMatrix } from "./PJS/transformation.js";
+import { radians, degrees, sin, cos, tan, asin, acos, atan, atan2 } from "./PJS/trigonometry.js";
+
+// Import classes
+import { Gamepad } from "./assets/gamepad.js";
+import { SceneChange } from "./assets/sceneChange.js";
+
 // Initialization
 {
             
 //console.clear();
 rectMode("CORNER");
 ellipseMode("CENTER");
-textFont("sans-serif");
 textSize(15);
 
 }
@@ -22,11 +35,19 @@ Credit to NonPlayerCharacter (he/him)(@JustASideQuestNPC) for the gamepad compat
 /** Lots of variables **/
 // [
 
-let scene = "charCreation";
+window.scene = "charCreation";
+
 let selectedButtons = [];
 let difficulty = "normal";
 
 // Player creation {
+
+window.curEllipseMode = "CENTER";
+window.curRectMode = "CORNER";
+window.requiresFirstVertex = true;
+window.angleMode = "degrees";
+window.globalFont = "serif";
+window.globalSize = 10;
 
 let charCreateMode = "skinTone";
 let eyeColorIndex = 2;
@@ -178,25 +199,25 @@ let clicked = false;
 
 let keys = [];
 let key;
-let keyPressed = function (event) {
+window.keyPressed = function (event) {
     keys[event.keyCode] = true;
     key = event.keyCode;
 };
-let keyReleased = function (event) {
+window.keyReleased = function (event) {
     keys[event.keyCode] = false;
 };
 
-let keyTyped = function (event) {
+window.keyTyped = function (event) {
     typed = true;
 };
 
 let mouseX, mouseY;
-let mouseMove = function (event) {
+window.mouseMove = function (event) {
     mouseX = event.clientX;
     mouseY = event.clientY;
 };
 
-let mouseClicked = function (event) {
+window.mouseClicked = function (event) {
     clicked = true;
 };
 
@@ -227,194 +248,11 @@ let circCircCol = function (cx, cy, cd, cx2, cy2, cd2) {
 
 //]
 
-/** Simple vector class (specifically for the gamepad) **/
-class Vector {
-
-    constructor (x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    add(v) {
-        return new Vector(this.x + v.x, this.y + v.y);
-    }
-
-    subtract(v) {
-        return new Vector(this.x - v.x, this.y - v.y);
-    }
-
-    multiply(scalar) {
-        return new Vector(this.x * scalar, this.y * scalar);
-    }
-
-    magnitude() {
-        return Math.sqrt(this.x ** 2 + this.y ** 2);
-    }
-
-    normalize() {
-        const mag = this.magnitude();
-        return mag === 0 ? new Vector(0, 0) : new Vector(this.x / mag, this.y / mag);
-    }
-
-}
-
-/** Gamepad compatibility **/
+/** Define some objects **/
 // [
 
-class Gamepad {
-
-    constructor (innerDeadzone = 0.1, outerDeadzone = 0.05, padIndex = -1) {
-        this._gamepad = null;
-        this._innerDeadzone = innerDeadzone;
-        this._outerDeadzone = outerDeadzone;
-        this._buttonCodes = {
-            "b": 0, // x (cross)
-            "a": 1, // circle
-            "y": 2, // square
-            "x": 3, // triangle
-            "left bumper": 4, // l1
-            "right bumper": 5, // r1
-            "left trigger": 6, // l2; full pull only
-            "right trigger": 7, // r2; full pull only
-            "share": 8,
-            "options": 9,
-            "left stick click": 10, // l3
-            "right stick click": 11, // r3
-            "dpad up": 12, 
-            "dpad down": 13,
-            "dpad left": 14,
-            "dpad right": 15,
-        };
-
-        this._getGamepad = function () {
-            return null;
-        };
-        
-        if (typeof window.navigator.webkitGetGamepads === "function") {
-            if (padIndex === -1) {
-                // Written by Mushy Avocado
-                this._getGamepad = function () {
-                    const gamepads = window.navigator.webkitGetGamepads();
-                    return gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3] || null;
-                };
-            }
-            else {
-                this._getGamepad = function () {
-                    return window.navigator.webkitGetGamepads()[padIndex] || null;
-                };
-            }
-        }
-        else if (typeof window.navigator.getGamepads === "function") {
-            if (padIndex === -1) {
-                // Written by Mushy Avocado
-                this._getGamepad = function () {
-                    const gamepads = window.navigator.getGamepads();
-                    return gamepads[0] || gamepads[1] || gamepads[2] || gamepads[3] || null;
-                };
-            }
-            else {
-                this._getGamepad = function () {
-                    return window.navigator.getGamepads()[padIndex] || null;
-                };
-            }
-        }
-    }
-
-    updateConnection () {
-        this._gamepad = this._getGamepad();
-    }
-    
-    isConnected () {
-        return this._gamepad !== null;
-    }
-    
-    isPressed (button) {
-        if (this._gamepad !== null) {
-            const index = this._buttonCodes[button];
-            if (button === "left trigger" || button === "right trigger") {
-                if (this._gamepad.axes[index - 2] !== undefined) {
-                    return this._gamepad.axes[index - 2] === 1;
-                }
-                return this._gamepad.buttons[index].value === 1;
-            }
-            return this._gamepad.buttons[index].pressed;
-        }
-        
-        return false;
-    }
-    
-    axisValue (axis, rawValue) {
-        rawValue = (rawValue !== undefined ? rawValue : false);
-        
-        if (this._gamepad !== null) {
-            if (axis === "left trigger") {
-                if (this._gamepad.axes[4] !== undefined) {
-                    return map(this._gamepad.axes[4], -1, 1, 0, 1);
-                }
-                return this._gamepad.buttons[6].value;
-            }
-            if (axis === "right trigger") {
-                if (this._gamepad.axes[5] !== undefined) {
-                    return map(this._gamepad.axes[5], -1, 1, 0, 1);
-                }
-                return this._gamepad.buttons[7].value;
-            }
-            
-            let value;
-            if (axis === "left stick x") {
-                value = this._gamepad.axes[0];
-            }
-            else if (axis === "left stick y") {
-                value = this._gamepad.axes[1];
-            }
-            else if (axis === "right stick x") {
-                value = this._gamepad.axes[2];
-            }
-            else if (axis === "right stick y") {
-                value = this._gamepad.axes[3];
-            }
-            
-            if (rawValue) { return value; }
-            return this._applyDeadzone(
-                value,
-                this._innerDeadzone,
-                this._outerDeadzone
-            );
-        }
-        
-        return 0;
-    }
-    
-    stickPos (stick, rawValue) {
-        return new Vector(
-            this.axisValue(stick + " stick x", rawValue),
-            this.axisValue(stick + " stick y", rawValue)
-        );
-    }
-    
-    stickVector (stick) {
-        let v = this.stickPos(stick);
-        v.normalize();
-        return v;
-    }
-    
-    _applyDeadzone (value, inner, outer) {
-        outer = 1 - outer;
-        if (value < 0) {
-            if (value >= -inner) { return 0; }
-            if (value <= -outer) { return -1; }
-            return map(value, -outer, -inner, -1, 0);
-        }
-        else {
-            if (value <= inner) { return 0; }
-            if (value >= outer) { return 1; }
-            return map(value, inner, outer, 0, 1);
-        }
-    }
-
-}
-
 const gamepad = new Gamepad();
+const sceneChange = new SceneChange();
 
 //]
 
@@ -997,53 +835,6 @@ const cursro = new Cursor(300, 300);
 
 //]
 
-/** Scene transition **/
-// [
-
-class SceneChange {
-
-    constructor () {
-        this.nextScene = "menu";
-        this.mode = "out";
-        this.opac = 255;
-        this.changeSpeed = 10;
-    }
-        
-    draw () {
-        noStroke();
-        fill(0, 0, 0, this.opac);
-        rect(0, 0, 600, 600);
-    }
-    
-    reset (nextScene) {
-        if (this.mode === "out") {
-            this.opac = 0;
-            this.mode = "in";
-            this.nextScene = nextScene;
-        }
-    }
-    
-    pack () {
-        if (this.mode === "in") {
-            this.opac += this.changeSpeed;
-            if (this.opac >= 255) {
-                this.mode = "out";
-                scene = this.nextScene;
-            }
-        }
-        else {
-            this.opac -= this.changeSpeed;
-        }
-        this.draw();
-        this.opac = constrain(this.opac, 0, 255);
-    }
-
-}
-
-const sceneChange = new SceneChange();
-
-//]
-
 /** Spell cast **/
 // [
 
@@ -1213,22 +1004,39 @@ const spellSheet = new SpellSheet(spell1, spell2, spell3, spell4);
 
 //]
 
-/** Player **/
+
+/** Entity class **/
 // [
 
-class Player {
-    
+class Entity {
+
     constructor (x, y, s) {
         this.x = x;
         this.y = y;
         this.s = s;
-        
+
         this.velx = 0;
         this.vely = 0;
-        this.maxSpeed = 3;
-        
+
         this.r = 0;
         this.scale = 1;
+
+        this.dead = false;
+    }
+
+}
+
+//]
+
+/** Player **/
+// [
+
+class Player extends Entity {
+    
+    constructor (x, y, s) {
+        super(x, y, s);
+        
+        this.maxSpeed = 3;
         
         this.witchOrWizard = null;
         this.wand = 0;
@@ -1240,7 +1048,6 @@ class Player {
             last : ""
         };
         
-        this.dead = false;
         this.health = 100;
         this.castReload = 0;
         this.reloading = false;
@@ -1248,39 +1055,47 @@ class Player {
         
         this.curState = false;
         this.prevState = false;
-    };
+    }
         
     update () {
         if (!this.dead) {
-            if (keys[65] || keys[37]) {
-                this.velx--;
-            }
-            if (keys[68] || keys[39]) {
-                this.velx++;
-            }
-            if (keys[87] || keys[38]) {
-                this.vely--;
-            }
-            if (keys[83] || keys[40]) {
-                this.vely++;
-            }
-            
-            if (!keys[65] && !keys[37] && !keys[68] && !keys[39]) {
-                if (this.velx > 0) {
+            if (!gamepad.isConnected()) {
+                if (keys[65] || keys[37]) {
                     this.velx--;
                 }
-                if (this.velx < 0) {
+                if (keys[68] || keys[39]) {
                     this.velx++;
                 }
-            }
-            
-            if (!keys[83] && !keys[40] && !keys[87] && !keys[38]) {
-                if (this.vely > 0) {
+                if (keys[87] || keys[38]) {
                     this.vely--;
                 }
-                if (this.vely < 0) {
+                if (keys[83] || keys[40]) {
                     this.vely++;
                 }
+                
+                if (!keys[65] && !keys[37] && !keys[68] && !keys[39]) {
+                    if (this.velx > 0) {
+                        this.velx--;
+                    }
+                    if (this.velx < 0) {
+                        this.velx++;
+                    }
+                }
+                
+                if (!keys[83] && !keys[40] && !keys[87] && !keys[38]) {
+                    if (this.vely > 0) {
+                        this.vely--;
+                    }
+                    if (this.vely < 0) {
+                        this.vely++;
+                    }
+                }
+            }
+            else {
+                let leftStick = gamepad.stickPos("left");
+
+                this.velx = leftStick.x * this.maxSpeed;
+                this.vely = leftStick.y * this.maxSpeed;
             }
             
             this.velx = constrain(this.velx, -this.maxSpeed, this.maxSpeed);
@@ -1397,17 +1212,13 @@ const player = new Player(300, 300, 75);
 /** Goblin **/
 // [
 
-class Goblin {
+class Goblin extends Entity {
 
     constructor (x, y, s, type, level) {
-        this.x = x;
-        this.y = y;
-        this.s = s;
+        super(x, y, s);
+
         this.type = type;
-        this.r = 0;
-        this.scale = 1;
         
-        this.dead = false;
         this.rendered = false;
         
         this.data = goblinData[this.type];
@@ -1756,8 +1567,9 @@ class Button {
                 image(images[this.icon], this.x, this.y, this.w, this.h);
             }
             else {
+                textFont(createFont("MagicSchoolOne"));
                 textAlign("CENTER", "CENTER");
-                textSize((this.w * this.h) / 500);
+                textSize((this.w * this.h) / 400);
                 outlinedText(this.icon, this.x + this.w / 2, this.y + this.h / 2, color(255), color(0), 40);
             }
             
@@ -1901,7 +1713,7 @@ let draw = function () {
             load();
         }
         else {
-            switch (scene) {
+            switch (window.scene) {
                 case "charCreation" : {
                     ctx.globalAlpha = 1;
 
@@ -1949,6 +1761,8 @@ let draw = function () {
                         notReady.opac = constrain(notReady.opac, 0, 255);
                         
                         textAlign("CENTER", "CENTER");
+                        textFont(createFont("MagicSchoolTwo"));
+                        textSize(40);
                         outlinedText("Please finish filling out the required information", 300, 275, color(255, 255, 255, notReady.opac), color(255, 0, 0, notReady.opac), 20);
                     }
                     else {
@@ -1962,6 +1776,9 @@ let draw = function () {
                     cursor("none");
                 } break;
                 case "game" : {
+                    firstName.input.style.display = "none";
+                    lastName.input.style.display = "none";
+                    
                     background(155);
                     
                     if (!gamepad.isConnected()) {

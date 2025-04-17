@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Khanwarts Legacy</title>
+        <link rel="stylesheet" href="css/stylesheet.css">
         <style>
 
             * {
@@ -17,7 +18,7 @@
 
         </style>
     </head>
-    <body onkeydown="keyPressed(event)" onkeyup="keyReleased(event); keyTyped(event)" onmousemove="mouseMove(event)" onclick="mouseClicked(event)">
+    <body onkeydown="window.keyPressed(event)" onkeyup="window.keyReleased(event); window.keyTyped(event)" onmousemove="window.mouseMove(event)" onclick="window.mouseClicked(event)">
 
         <!-- Canvas element -->
         <canvas id="canvas"></canvas>
@@ -35,29 +36,8 @@
             let height = 600;
 
         </script>
-
-        <!-- Some variables -->
-        <script>
-
-            let curEllipseMode = "CENTER";
-            let curRectMode = "CORNER";
-            let requiresFirstVertex = true;
-            let angleMode = "degrees";
-            let globalFont = "serif";
-            let globalSize = 10;
-
-        </script>
-
-        <script src="shapes.js"></script>
-        <script src="complexShapes.js"></script>
-        <script src="colors.js"></script>
-        <script src="text.js"></script>
-        <script src="transformation.js"></script>
-        <script src="math.js"></script>
-        <script src="trigonometry.js"></script>
-        <script src="other.js"></script>
-        <script src="Base64AudioPlayer.js"></script>
-        <script src="main.js"></script>
+        
+        <script type="module" src="main.js"></script>
 
     </body>
 </html>
