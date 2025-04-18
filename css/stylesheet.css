@@ -2,8 +2,8 @@
 
 @font-face {
     font-family: "MagicSchoolOne";
-    src: url("fonts/magicschoolone.woff2") format("woff2"),
-         url("fonts/magicschoolone.woff") format("woff");
+    src: url("https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.4/fonts/magicschoolone.woff2") format("woff2"),
+         url("https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.4/fonts/magicschoolone.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 
@@ -11,8 +11,8 @@
 
 @font-face {
     font-family: "MagicSchoolTwo";
-    src: url("fonts/magicschooltwo.woff2") format("woff2"),
-         url("fonts/magicschooltwo.woff") format("woff");
+    src: url("https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.4/fonts/magicschooltwo.woff2") format("woff2"),
+         url("https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.4/fonts/magicschooltwo.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 
