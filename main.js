@@ -1,16 +1,16 @@
 // Import custom processing.js library
-import { color, fill, noFill, background, noStroke, strokeWeight, stroke, lerpColor } from "./PJS/colors.js";
-import { beginShape, endShape, vertex, bezierVertex, strokeJoin } from "./PJS/complexShapes.js";
-import { random, dist, constrain, min, max, abs, log, pow, sq, sqrt, round, ceil, floor, map, lerp, noise } from "./PJS/math.js";
-import { get, cursor } from "./PJS/other.js";
-import { rect, arc, ellipse, triangle, quad, image, line, point, bezier, ellipseMode, rectMode, strokeCap } from "./PJS/shapes.js";
-import { textFont, createFont, textSize, textAlign, text } from "./PJS/text.js";
-import { pushMatrix, translate, rotate, scale, popMatrix, resetMatrix } from "./PJS/transformation.js";
-import { radians, degrees, sin, cos, tan, asin, acos, atan, atan2 } from "./PJS/trigonometry.js";
+import { color, fill, noFill, background, noStroke, strokeWeight, stroke, lerpColor } from "pjs/colors.js";
+import { beginShape, endShape, vertex, bezierVertex, strokeJoin } from "pjs/complexShapes.js";
+import { random, dist, constrain, min, max, abs, log, pow, sq, sqrt, round, ceil, floor, map, lerp, noise } from "pjs/math.js";
+import { get, cursor } from "pjs/other.js";
+import { rect, arc, ellipse, triangle, quad, image, line, point, bezier, ellipseMode, rectMode, strokeCap } from "pjs/shapes.js";
+import { textFont, createFont, textSize, textAlign, text } from "pjs/text.js";
+import { pushMatrix, translate, rotate, scale, popMatrix, resetMatrix } from "pjs/transformation.js";
+import { radians, degrees, sin, cos, tan, asin, acos, atan, atan2 } from "pjs/trigonometry.js";
 
 // Import classes
-import { Gamepad } from "./assets/gamepad.js";
-import { SceneChange } from "./assets/sceneChange.js";
+import { Gamepad } from "assets/gamepad.js";
+import { SceneChange } from "assets/sceneChange.js";
 
 // Initialization
 {
@@ -35,12 +35,10 @@ Credit to NonPlayerCharacter (he/him)(@JustASideQuestNPC) for the gamepad compat
 /** Lots of variables **/
 // [
 
+window.width = document.getElementById("canvas").width;
+window.height = document.getElementById("canvas").height;
+
 window.scene = "charCreation";
-
-let selectedButtons = [];
-let difficulty = "normal";
-
-// Player creation {
 
 window.curEllipseMode = "CENTER";
 window.curRectMode = "CORNER";
@@ -48,6 +46,11 @@ window.requiresFirstVertex = true;
 window.angleMode = "degrees";
 window.globalFont = "serif";
 window.globalSize = 10;
+
+let selectedButtons = [];
+let difficulty = "normal";
+
+// Player creation {
 
 let charCreateMode = "skinTone";
 let eyeColorIndex = 2;

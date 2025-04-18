@@ -1,6 +1,6 @@
-import { fill, noStroke } from "../PJS/colors.js";
-import { rect } from "../PJS/shapes.js";
-import { constrain } from "../PJS/math.js";
+import { fill, noStroke } from "pjs/colors.js";
+import { rect } from "pjs/shapes.js";
+import { constrain } from "pjs/math.js";
 
 class SceneChange {
 
@@ -14,7 +14,7 @@ class SceneChange {
     draw () {
         noStroke();
         fill(0, 0, 0, this.opac);
-        rect(0, 0, 600, 600);
+        rect(0, 0, window.width, window.height);
     }
     
     reset (nextScene) {

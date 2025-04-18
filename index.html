@@ -31,12 +31,18 @@
 
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
-            let width = 600;
-            let height = 600;
 
         </script>
         
+        <script type="importmap">
+            {
+                "imports": {
+                    "pjs/": "https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.0/PJS/",
+                    "assets/" : "https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.0/assets/"
+                }
+            }
+        </script>
+
         <script type="module" src="main.js"></script>
 
     </body>

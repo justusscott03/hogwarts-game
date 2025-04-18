@@ -1,4 +1,4 @@
-import { constrain } from "./math.js";
+import { constrain } from "pjs/math.js";
 
 // Convert a number to hexadecimal
 function toHex (num) {
@@ -57,7 +57,7 @@ function noFill () {
 
 function background (r, g, b, a) {
     fill(r, g, b, a);
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, window.width, window.height);
 }
 
 // Stroke
