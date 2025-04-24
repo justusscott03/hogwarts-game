@@ -12,15 +12,76 @@ import { radians, degrees, sin, cos, tan, asin, acos, atan, atan2 } from "pjs/tr
 import { Gamepad } from "assets/gamepad.js";
 import { SceneChange } from "assets/sceneChange.js";
 
-// Initialization
-{
-            
-//console.clear();
+// Initialization   
 rectMode("CORNER");
 ellipseMode("CENTER");
 textSize(15);
 
+// For sizing the screen {
+
+// Original screen width and height
+const originalWidth = 1872;
+const originalHeight = 962;
+
+// Current width and height
+let screenWidth = window.innerWidth;
+let screenHeight = window.innerHeight;
+
+// Original aspect ratio
+const aspectRatio = originalWidth / originalHeight;
+
+// New width and height
+let scaledWidth, scaledHeight;
+if (screenWidth / screenHeight > aspectRatio) {
+    scaledHeight = screenHeight;
+    scaledWidth = scaledHeight * aspectRatio;
 }
+else {
+    scaledWidth = screenWidth;
+    scaledHeight = scaledWidth / aspectRatio;
+}
+
+// Function for reducing the frequency at which another function is called
+function debounce (func, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(function () { func.apply(this, args) }, delay);
+    }
+}
+
+// Update the width and height if the window is resized
+window.addEventListener("resize", debounce(
+    function (event) {
+        screenWidth = window.innerWidth;
+        screenHeight = window.innerHeight;
+        if (screenWidth / screenHeight > aspectRatio) {
+            scaledHeight = screenHeight;
+            scaledWidth = scaledHeight * aspectRatio;
+        }
+        else {
+            scaledWidth = screenWidth;
+            scaledHeight = scaledWidth / aspectRatio;
+        }
+    }, 300
+));
+
+// Get the canvas
+let canvas = document.getElementById("canvas");
+
+// Make the canvas width the original width and height (it's scaled down in the draw function)
+canvas.width = originalWidth;
+canvas.height = originalHeight;
+
+
+window.width = canvas.width;
+window.height = canvas.height;
+
+const halfWidth = window.width / 2;
+const halfHeight = window.height / 2;
+
+//}
+
 
 /**
 
@@ -34,9 +95,6 @@ Credit to NonPlayerCharacter (he/him)(@JustASideQuestNPC) for the gamepad compat
 
 /** Lots of variables **/
 // [
-
-window.width = document.getElementById("canvas").width;
-window.height = document.getElementById("canvas").height;
 
 window.scene = "charCreation";
 
@@ -65,11 +123,14 @@ const eyeColors = [
     color(75, 54, 33)
 ];
 const skinTones = [
-    color(255, 224, 189),
-    color(242, 203, 169),
-    color(198, 134, 66),
-    color(147, 91, 44),
-    color(94, 60, 30)
+    color(230, 201, 172), 
+    color(214, 171, 124), 
+    color(194, 146, 95),
+    color(194, 138, 78),
+    color(128, 87, 37),
+    color(97, 66, 29), 
+    color(92, 56, 12), 
+    color(64, 37, 4)
 ];
 const cloakColors = [
     color(178, 50, 36),
@@ -298,29 +359,6 @@ const images = {
     force : function () {
         
         background(0, 0, 0, 0);
-        
-        // let msk = createGraphics(width, height, P2D);
-        
-        // msk.background(0, 0, 0, 0);
-        
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
-        
-        // msk = msk.get();
-        
-        // let bkg = createGraphics(width, height, P2D);
-        
-        // bkg.noStroke();
-        // for (let i = 0; i < 100; i++) {
-        //     let lerpC = lerpColor(color(175, 0, 255), color(75, 0, 100), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
-        
-        // bkg = bkg.get();
-        
-        // bkg.mask(msk);
-        
-        // image(bkg, 0, 0);
 
         ctx.save();
 
@@ -351,29 +389,6 @@ const images = {
     control : function () {
         
         background(0, 0, 0, 0);
-        
-        // let msk = createGraphics(width, height, P2D);
-        
-        // msk.background(0, 0, 0, 0);
-        
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
-        
-        // msk = msk.get();
-        
-        // let bkg = createGraphics(width, height, P2D);
-        
-        // bkg.noStroke();
-        // for (let i = 0; i < 100; i++) {
-        //     let lerpC = lerpColor(color(255, 242, 0), color(179, 167, 0), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
-        
-        // bkg = bkg.get();
-        
-        // bkg.mask(msk);
-        
-        // image(bkg, 0, 0);
 
         ctx.save();
 
@@ -404,29 +419,6 @@ const images = {
     power : function () {
         
         background(0, 0, 0, 0);
-        
-        // let msk = createGraphics(width, height, P2D);
-        
-        // msk.background(0, 0, 0, 0);
-        
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
-        
-        // msk = msk.get();
-        
-        // let bkg = createGraphics(width, height, P2D);
-        
-        // bkg.noStroke();
-        // for (let i = 0; i < 100; i++) {
-        //     let lerpC = lerpColor(color(255, 0, 0), color(150, 0, 0), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
-        
-        // bkg = bkg.get();
-        
-        // bkg.mask(msk);
-        
-        // image(bkg, 0, 0);
 
         ctx.save();
 
@@ -457,29 +449,6 @@ const images = {
     forbidden : function () {
         
         background(0, 0, 0, 0);
-        
-        // let msk = createGraphics(width, height, P2D);
-        
-        // msk.background(0, 0, 0, 0);
-        
-        // msk.quad(50, 0, 100, 50, 50, 100, 0, 50);
-        
-        // msk = msk.get();
-        
-        // let bkg = createGraphics(width, height, P2D);
-        
-        // bkg.noStroke();
-        // for (let i = 0; i < 100; i++) {
-        //     let lerpC = lerpColor(color(96, 196, 92), color(30, 97, 32), i / 100);
-        //     bkg.fill(lerpC);
-        //     bkg.rect(0, i, 100, 1);
-        // }
-        
-        // bkg = bkg.get();
-        
-        // bkg.mask(msk);
-        
-        // image(bkg, 0, 0);
 
         ctx.save();
 
@@ -911,8 +880,10 @@ class Spell {
     }
         
     use () {
-        this.s = 0.9;
-        this.reloading = true;
+        if (!this.reloading) {
+            this.s = 0.9;
+            this.reloading = true;
+        }
     }
 
     update () {
@@ -968,10 +939,10 @@ class Spell {
 
 }
 
-let spell1 = new Spell(530, 490, 60, 60, "power");
-let spell2 = new Spell(490, 530, 60, 60, "forbidden");
-let spell3 = new Spell(450, 490, 60, 60, "force");
-let spell4 = new Spell(490, 450, 60, 60, "control");
+let spell1 = new Spell(window.width - 100, window.height - 150, 80, 80, "power");
+let spell2 = new Spell(window.width - 150, window.height - 100, 80, 80, "forbidden");
+let spell3 = new Spell(window.width - 150, window.height - 200, 80, 80, "control");
+let spell4 = new Spell(window.width - 200, window.height - 150, 80, 80, "force");
 
 //]
 
@@ -987,6 +958,10 @@ class SpellSheet {
         this.spell4 = spell4;
         
         this.spells = [spell1, spell2, spell3, spell4];
+
+        this.curState = false;
+        this.prevState = false;
+        this.specialSpellTimer = 0;
     }
         
     draw () {
@@ -995,10 +970,45 @@ class SpellSheet {
             this.spells[i].update();
             this.spells[i].draw();
 
-            if (typed && key === i + 49) {
-                this.spells[i].use();
+            if (!gamepad.isConnected()) {
+                if (typed && key === i + 49) {
+                    this.spells[i].use();
+                }
+            }
+            else {
+                let rightTrigger = gamepad.isPressed("right trigger");
+
+                if (rightTrigger) {
+                    this.specialSpellTimer++;
+                    if (this.specialSpellTimer > 20) {
+                        player.canCastSpecialSpell = true;
+                        
+                        this.curState = [
+                            gamepad.isPressed("a"),
+                            gamepad.isPressed("b"),
+                            gamepad.isPressed("x"),
+                            gamepad.isPressed("y")
+                        ];
+
+                        for (var j = 0; j < this.curState.length; j++) {
+                            if (!this.curState[j] && this.prevState[j]) {
+                                this.spells[j].use();
+                            }
+                        }
+
+                        this.prevState = this.curState;
+                    }
+                }
+                else {
+                    this.specialSpellTimer = 0;
+                }
+
+                if (!rightTrigger && this.specialSpellTimer < 20) {
+                    player.canCastSpecialSpell = false;
+                }
             }
         }
+
     }
 
 }
@@ -1008,7 +1018,7 @@ const spellSheet = new SpellSheet(spell1, spell2, spell3, spell4);
 //]
 
 
-/** Entity class **/
+/** Entity class (for combining common properties of player, enemies, etc.) **/
 // [
 
 class Entity {
@@ -1058,6 +1068,7 @@ class Player extends Entity {
         
         this.curState = false;
         this.prevState = false;
+        this.castingSpecialSpell = false;
     }
         
     update () {
@@ -1115,7 +1126,7 @@ class Player extends Entity {
                 }
             }
             
-            if (!this.reloading) {
+            if (!this.reloading && !this.canCastSpecialSpell) {
                 if (clicked && !gamepad.isConnected()) {
                     spellCasts.push(new SpellCast(this.x + sin(this.r + 200) * 100, this.y - cos(this.r + 200) * 100, 6, 45, this.r, this.selectedSpell.name, this.selectedSpell.speed));
                     this.reloading = true;
@@ -1208,7 +1219,7 @@ class Player extends Entity {
     
 }
 
-const player = new Player(300, 300, 75);
+const player = new Player(halfWidth + 400, halfHeight, 75);
 
 //]
 
@@ -1242,12 +1253,16 @@ class Goblin extends Entity {
         else {
             this.rendered = false;
         }
+
+        if (this.health <= 0) {
+            this.dead = true;
+        }
         
     }
     
     draw () {
         
-        if (this.rendered) {
+        if (this.rendered && !this.dead) {
             pushMatrix();
                 translate(this.x, this.y);
                 rotate(this.r);
@@ -1329,7 +1344,7 @@ class CollisionBox {
         for (let i = 0; i < goblins.length; i++) {
             let g = goblins[i];
             
-            if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600) {
+            if (g.rendered && dist(this.x, this.y, g.x, g.y) < 600 && !g.dead) {
                 if (this.type === "circ") {
                     if (circCircCol(this.x, this.y, this.w, g.x, g.y, g.s)) {
                         let angle = Math.atan2(g.x - this.x, g.y - this.y);
@@ -1383,7 +1398,7 @@ collisionBoxes.add = function (x, y, w, h, type) {
 let loadMap = function () {
     collisionBoxes.add(500, 500, 200, 200, "rect");
     collisionBoxes.add(100, 100, 50, 50, "circ");
-    goblins.add(300, 300, 75, "assasin", 20);
+    goblins.add(300, 300, 75, "assasin", 1);
 };
 loadMap();
 
@@ -1480,8 +1495,8 @@ class Input {
 
 }
 
-const firstName = new Input(10, 205, 275, 110 / 3, "First Name", 20);
-const lastName = new Input(315, 205, 275, 110 / 3, "Last Name", 20);
+const firstName = new Input(halfWidth - 800, halfHeight - 150, 343.75, 275 / 6, "First Name", 20);
+const lastName = new Input(halfWidth - 306.25, halfHeight - 150, 343.75, 275 / 6, "Last Name", 20);
 
 //]
 
@@ -1572,7 +1587,7 @@ class Button {
             else {
                 textFont(createFont("MagicSchoolOne"));
                 textAlign("CENTER", "CENTER");
-                textSize((this.w * this.h) / 400);
+                textSize((this.w * this.h) / 800 + 25);
                 outlinedText(this.icon, this.x + this.w / 2, this.y + this.h / 2, color(255), color(0), 40);
             }
             
@@ -1585,7 +1600,7 @@ class Button {
 
 // Player creation {
 
-const charCreateLeft = new Button(50, 250, 100, 100, function () {
+const charCreateLeft = new Button(halfWidth - 700, halfHeight - 75, 150, 150, function () {
     if (charCreateMode === "eyeColor") {
         if (eyeColorIndex === 0) {
             eyeColorIndex = eyeColors.length - 1;
@@ -1611,7 +1626,7 @@ const charCreateLeft = new Button(50, 250, 100, 100, function () {
         }
     }
 }, "leftArrow", "");
-const charCreateRight = new Button(450, 250, 100, 100, function () {
+const charCreateRight = new Button(halfWidth - 150, halfHeight - 75, 150, 150, function () {
     if (charCreateMode === "eyeColor") {
         if (eyeColorIndex === eyeColors.length - 1) {
             eyeColorIndex = 0;
@@ -1638,17 +1653,17 @@ const charCreateRight = new Button(450, 250, 100, 100, function () {
     }
 }, "rightArrow", "");
 
-const charCreateSkin = new Button(180, 75, 60, 60, function () {
+const charCreateSkin = new Button(halfWidth - 575, 75, 100, 100, function () {
     charCreateMode = "skinTone";
 }, "miniPlayer", "fadeSelect default", "appearance");
-const charCreateEye = new Button(270, 75, 60, 60, function () {
+const charCreateEye = new Button(halfWidth - 400, 75, 100, 100, function () {
     charCreateMode = "eyeColor";
 }, "miniEye", "fadeSelect", "appearance");
-const charCreateCloak = new Button(360, 75, 60, 60, function () {
+const charCreateCloak = new Button(halfWidth - 225, 75, 100, 100, function () {
     charCreateMode = "cloakColor";
 }, "miniCloak", "fadeSelect", "appearance");
 
-const charCreateNext = new Button(238.5, 450, 125, 125, function () {
+const charCreateNext = new Button(halfWidth - 450, halfHeight + 200, 200, 200, function () {
     selectedButtons.length = 0;
     if (creationIndex === 1) {
         creationIndex++;
@@ -1663,20 +1678,20 @@ const charCreateNext = new Button(238.5, 450, 125, 125, function () {
     }
 }, "NEXT", "");
 
-const charCreateWitch = new Button(175, 315, 100, 100, function () {
+const charCreateWitch = new Button(halfWidth - 550, halfHeight - 25, 150, 150, function () {
     player.witchOrWizard = "witch";
 }, "Witch", "fadeSelect", "witchOrWizard");
-const charCreateWizard = new Button(325, 315, 100, 100, function () {
+const charCreateWizard = new Button(halfWidth - 300, halfHeight - 25, 150, 150, function () {
     player.witchOrWizard  = "wizard";
 }, "Wizard", "fadeSelect", "witchOrWizard");
 
-const charCreateWand1 = new Button(195, 25, 100, 100, function () {
+const charCreateWand1 = new Button(halfWidth - 625, halfHeight - 400, 150, 150, function () {
     player.wand = 1;
 }, "wand1", "fadeSelect", "wand");
-const charCreateWand2 = new Button(320, 25, 100, 100, function () {
+const charCreateWand2 = new Button(halfWidth - 425, halfHeight - 400, 150, 150, function () {
     player.wand = 2;
 }, "wand2", "fadeSelect", "wand");
-const charCreateWand3 = new Button(445, 25, 100, 100, function () {
+const charCreateWand3 = new Button(halfWidth - 225, halfHeight - 400, 150, 150, function () {
     player.wand = 3;
 }, "wand3", "fadeSelect", "wand");
 
@@ -1708,14 +1723,24 @@ let frameTimes = [new Date().getTime()];
 
 let draw = function () {
     try {
+
+        resetMatrix();
+        
         cursor("auto");
         
         gamepad.updateConnection();
-        
+
+        background(255, 255, 255);
+
         if (!loaded) {
             load();
         }
         else {
+
+            pushMatrix();
+
+            scale(scaledWidth / originalWidth, scaledHeight / originalHeight);
+
             switch (window.scene) {
                 case "charCreation" : {
                     ctx.globalAlpha = 1;
@@ -1723,11 +1748,10 @@ let draw = function () {
                     image(images.noiseSquare, 0, 0, width, height);
                     
                     player.r += 0.3;
+                    player.scale = 5;
                     player.draw();
                     
                     if (creationIndex === 1) {
-                        player.scale = 2;
-                        
                         charCreateLeft.draw();
                         charCreateRight.draw();
                         charCreateSkin.draw();
@@ -1736,9 +1760,6 @@ let draw = function () {
                         charCreateNext.draw();
                     }
                     else if (creationIndex === 2) {
-                        player.scale = lerp(player.scale, 1, 0.1);
-                        player.x = lerp(player.x, 75, 0.1);
-                        player.y = lerp(player.y, 75, 0.1);
                         player.name.first = firstName.input.value;
                         player.name.last = lastName.input.value;                        
                         
@@ -1765,8 +1786,8 @@ let draw = function () {
                         
                         textAlign("CENTER", "CENTER");
                         textFont(createFont("MagicSchoolTwo"));
-                        textSize(40);
-                        outlinedText("Please finish filling out the required information", 300, 275, color(255, 255, 255, notReady.opac), color(255, 0, 0, notReady.opac), 20);
+                        textSize(50);
+                        outlinedText("Please finish filling out the required information", halfWidth - 350, halfHeight - 200, color(255, 255, 255, notReady.opac), color(255, 0, 0, notReady.opac), 20);
                     }
                     else {
                         charCreateEasy.draw();
@@ -1774,18 +1795,22 @@ let draw = function () {
                         charCreateHard.draw();
                         PLAY.draw();
                     }
+
                     cursro.update();
                     cursro.draw();
                     cursor("none");
                 } break;
                 case "game" : {
+
+                    player.scale = 1;
+
                     firstName.input.style.display = "none";
                     lastName.input.style.display = "none";
                     
                     background(155);
                     
                     if (!gamepad.isConnected()) {
-                        player.r = atan2(mouseY - 300, mouseX - 300) - 90;
+                        player.r = atan2(mouseY - halfHeight, mouseX - halfWidth) - 90;
                     }
                     else {
                         let leftStick = gamepad.stickPos("left");
@@ -1796,7 +1821,7 @@ let draw = function () {
                     }
                     
                     pushMatrix();
-                        translate(300, 300);
+                        translate(halfWidth, halfHeight);
                         scale(cam.z);
                         translate(-cam.x, -cam.y);
                         
@@ -1814,12 +1839,15 @@ let draw = function () {
                             }
                             
                             
-                            for (let j = 0; j < goblins.length; j++) {
+                            for (let j = goblins.length - 1; j >= 0; j--) {
                                 if (spellCasts.length !== 0) {
                                     if (circCircCol(spellCasts[i].x, spellCasts[i].y, spellCasts[i].w, goblins[j].x, goblins[j].y, goblins[j].s)) {
                                         goblins[j].damage(spellCasts[i].name);
                                         spellCasts.splice(i, 1);
                                     }
+                                }
+                                if (goblins[j].dead) {
+                                    goblins.splice(j, 1);
                                 }
                             }
                             
@@ -1836,8 +1864,12 @@ let draw = function () {
                     popMatrix();
                     
                     spellSheet.draw();
+
                 } break;
             }
+
+            popMatrix();
+            
         }
 
         sceneChange.pack();

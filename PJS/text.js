@@ -1,6 +1,6 @@
 function textFont (font) {
     window.globalFont = font;
-    ctx.font = window.globalSize + "px " + window.globalFont;
+    ctx.font = `${window.globalSize}px ${window.globalFont}`;
 }
 
 function createFont (font) {
@@ -9,7 +9,7 @@ function createFont (font) {
 
 function textSize (size) {
     window.globalSize = size;
-    ctx.font = window.globalSize + "px " + window.globalFont;
+    ctx.font = `${window.globalSize}px ${window.globalFont}`;
 }
 
 function textAlign (ALIGN, YALIGN = "BASELINE") {

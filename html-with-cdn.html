@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Khanwarts Legacy</title>
-        <link rel="stylesheet" href="./css/stylesheet.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/justusscott03/hogwarts-game@v0.8.4/css/stylesheet.css">
         <style>
 
             * {
@@ -29,6 +29,9 @@
 
             let canvas = document.getElementById("canvas");
             let ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
         </script>
         
