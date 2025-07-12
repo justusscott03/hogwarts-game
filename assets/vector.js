@@ -5,23 +5,23 @@ class Vector {
         this.y = y;
     }
 
-    add(v) {
+    add (v) {
         return new Vector(this.x + v.x, this.y + v.y);
     }
 
-    subtract(v) {
+    subtract (v) {
         return new Vector(this.x - v.x, this.y - v.y);
     }
 
-    multiply(scalar) {
+    multiply (scalar) {
         return new Vector(this.x * scalar, this.y * scalar);
     }
 
-    magnitude() {
+    magnitude () {
         return Math.sqrt(this.x ** 2 + this.y ** 2);
     }
 
-    normalize() {
+    normalize () {
         const mag = this.magnitude();
         return mag === 0 ? new Vector(0, 0) : new Vector(this.x / mag, this.y / mag);
     }

@@ -1,4 +1,4 @@
-import { constrain } from "pjs/math.js";
+import { constrain } from "./math.js";
 
 // Convert a number to hexadecimal
 function toHex (num) {

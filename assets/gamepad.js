@@ -1,5 +1,5 @@
-import { Vector } from "assets/vector.js";
-import { map } from "pjs/math.js";
+import { Vector } from "./vector.js";
+import { map } from "../PJS/math.js";
 
 class Gamepad {
 
